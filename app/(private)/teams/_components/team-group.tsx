@@ -18,9 +18,11 @@ export function TeamGroup({ group }: TeamGroupProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="flex flex-wrap gap-4 mx-auto">
         {teams.map((team) => (
-          <TeamCard key={team.id} team={team} />
+          <div key={team.id} className="min-w-[280px] flex-1 max-w-[320px]">
+            <TeamCard team={team} />
+          </div>
         ))}
       </div>
     </div>

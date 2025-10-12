@@ -4,7 +4,8 @@ import { Inter, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
 import { FavoritesProvider } from "@/contexts/favorites-context"
-import { SidebarProvider } from "@/contexts/sidebar-context"
+import { SidebarProvider as CustomSidebarProvider } from "@/contexts/sidebar-context"
+import { SidebarProvider as ShadcnSidebarProvider } from "@/components/ui/sidebar"
 import "./globals.css"
 import { Suspense } from "react"
 
@@ -37,7 +38,11 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <AuthProvider>
             <FavoritesProvider>
-              <SidebarProvider>{children}</SidebarProvider>
+              <CustomSidebarProvider>
+                <ShadcnSidebarProvider>
+                  {children}
+                </ShadcnSidebarProvider>
+              </CustomSidebarProvider>
             </FavoritesProvider>
           </AuthProvider>
         </Suspense>

@@ -1,9 +1,6 @@
 // Main sidebar component
 export { AppSidebar } from './app-sidebar'
 
-// Sidebar provider
-export { SidebarProvider } from './sidebar-provider'
-
 // Sidebar components
 export { SidebarUserInfo } from './_components/sidebar-user'
 export { SidebarNavItem } from './_components/sidebar-nav-item'

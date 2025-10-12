@@ -28,7 +28,7 @@ export function PrivateLayoutWrapper({ children }: PrivateLayoutWrapperProps) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-as1-primary">
+      <div className="flex min-h-screen items-center justify-center w-full ">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     )
@@ -39,21 +39,24 @@ export function PrivateLayoutWrapper({ children }: PrivateLayoutWrapperProps) {
   }
 
   return (
-    <div className="flex h-screen w-full bg-gradient-as1-primary overflow-hidden">
+    <div className="flex h-screen w-full  overflow-hidden">
       <AppSidebar />
       
-      <SidebarInset className="flex-1 bg-gradient-as1-primary overflow-y-auto">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4">
+      <SidebarInset className="flex-1 overflow-y-auto">
+        {/* Header solo para mobile */}
+        <header className="md:hidden flex h-16 shrink-0 items-center gap-2 border-b border-border px-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="md:hidden -ml-1"
+            className="-ml-1"
           >
             <Menu className="!h-9 !w-9" />
           </Button>
         </header>
-        <main className="flex-1 p-4">
+        
+        {/* Contenido principal */}
+        <main className="flex-1 p-8">
           {children}
         </main>
       </SidebarInset>

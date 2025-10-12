@@ -28,11 +28,7 @@ export function AppSidebar() {
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className="bg-gradient-as1-primary border-r border-border"
-      style={{
-        "--sidebar-width": isCollapsed ? "5rem" : "16rem",
-        "--sidebar-width-icon": "5rem",
-      } as React.CSSProperties}
+      className="bg-gradient-as1-primary border-r border-border sidebar-custom-width"
     >
       <SidebarHeader className="border-b border-border">
         <SidebarLogoHeader isCollapsed={isCollapsed} />

@@ -3,7 +3,9 @@ import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Shield, Users, ArrowRight, Star } from "lucide-react"
+import { cn } from "@/lib/utils"
 import type { Team } from "@/lib/types"
+import { TEAM_CARD_TEXTS } from "../_constants"
 
 interface TeamCardProps {
   team: Team & { playerCount: number }
@@ -69,7 +71,6 @@ export function TeamCard({ team }: TeamCardProps) {
               className="w-full h-10 bg-gradient-to-r from-as1-charcoal to-as1-charcoal/90 hover:from-as1-charcoal/90 hover:to-as1-charcoal text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group/btn"
             >
               <span>View Players</span>
-              <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover/btn:translate-x-0.5 transition-transform duration-200" />
             </Button>
           </Link>
         </div>
