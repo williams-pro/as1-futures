@@ -70,7 +70,7 @@ export function PlayerListItem({ player }: PlayerListItemProps) {
 
   // Tooltip texts
   const favoriteTooltip = playerIsExclusive && playerIsFavorite
-    ? "Cannot remove favorite while player is exclusive. Remove exclusive status first."
+    ? "Cannot remove from favorites while player is exclusive. Remove exclusive status first."
     : playerIsFavorite
       ? PLAYER_LIST_ITEM_TEXTS.TOOLTIPS.FAVORITE.REMOVE
       : PLAYER_LIST_ITEM_TEXTS.TOOLTIPS.FAVORITE.ADD

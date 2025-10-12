@@ -48,7 +48,6 @@ export function PlayerCardActionButtons({
               playerIsExclusive && playerIsFavorite && "opacity-60 cursor-not-allowed"
             )}
             onClick={onFavoriteClick}
-            disabled={playerIsExclusive && playerIsFavorite}
           >
             <Star 
               size={16} 
