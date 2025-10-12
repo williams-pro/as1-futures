@@ -1,6 +1,6 @@
 "use client"
 
-import { AppLayout } from "@/components/layout/app-layout"
+import { PageContent } from "@/components/layout/page-content"
 import { PlayerFilters } from "./_components/player-filters"
 import { PlayerGrid } from "./_components/player-grid"
 import { usePlayerFilters } from "./_hooks/use-player-filters"
@@ -18,7 +18,7 @@ export default function PlayersPage() {
   } = usePlayerFilters()
 
   return (
-    <AppLayout>
+    <PageContent>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground text-balance">Players</h1>
@@ -38,6 +38,6 @@ export default function PlayersPage() {
 
         <PlayerGrid players={filteredPlayers} />
       </div>
-    </AppLayout>
+    </PageContent>
   )
 }

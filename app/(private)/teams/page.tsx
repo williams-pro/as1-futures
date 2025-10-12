@@ -1,10 +1,10 @@
-import { AppLayout } from "@/components/layout/app-layout"
 import { TeamGroup } from "./_components/team-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PageContent } from "@/components/layout/page-content"
 
 export default function TeamsPage() {
   return (
-    <AppLayout>
+    <PageContent>
       <div className="space-y-8">
         {/* Header Section - Centrado y limpio */}
         <div className="text-left space-y-4">
@@ -76,6 +76,6 @@ export default function TeamsPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </PageContent>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { AppLayout } from "@/components/layout/app-layout"
+import { PageContent } from "@/components/layout/page-content"
 import { Button } from "@/components/ui/button"
 import { FavoritesSection } from "./_components/favorites-section"
 import { useFavoritesManager } from "./_hooks/use-favorites-manager"
@@ -29,7 +29,7 @@ export default function FavoritesPage() {
   const totalFavorites = exclusivePlayers.length + regularFavoritePlayers.length
 
   return (
-    <AppLayout>
+    <PageContent>
       <div className="space-y-8">
         {/* Header */}
         <div className="space-y-3">
@@ -98,6 +98,6 @@ export default function FavoritesPage() {
           />
         </div>
       </div>
-    </AppLayout>
+    </PageContent>
   )
 }

@@ -2,7 +2,7 @@ import { Logo } from "@/components/shared/logo"
 import { CopyrightFooter } from './_components/copyright-footer'
 import { cn } from "@/lib/utils"
 
-export default function RootLayout({
+export default function RootLayout({  
   children,
 }: {
   children: React.ReactNode

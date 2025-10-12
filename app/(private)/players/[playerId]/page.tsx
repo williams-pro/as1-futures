@@ -1,6 +1,6 @@
 "use client"
 
-import { AppLayout } from "@/components/layout/app-layout"
+import { PageContent } from "@/components/layout/page-content"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -45,7 +45,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
   const initials = `${player.firstName[0]}${player.lastName[0]}`
 
   return (
-    <AppLayout>
+    <PageContent>
       <TooltipProvider delayDuration={300}>
         <div className="space-y-8">
           {/* Header Navigation */}
@@ -229,6 +229,6 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
           onConfirm={confirmRemoveExclusive}
         />
       </TooltipProvider>
-    </AppLayout>
+    </PageContent>
   )
 }

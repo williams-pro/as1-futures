@@ -1,11 +1,13 @@
-import { AppLayout } from "@/components/layout/app-layout"
-
-// Este layout se aplica a todas las rutas del grupo (private)
-// Incluye la navegación y verificación de autenticación
+import { PrivateLayoutWrapper } from "@/components/layout/private-layout"
+import { SidebarProvider } from "@/components/sidebar"
 export default function PrivateLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <AppLayout>{children}</AppLayout>
+  return (
+    <SidebarProvider>
+      <PrivateLayoutWrapper>{children}</PrivateLayoutWrapper>
+    </SidebarProvider>
+  )
 }

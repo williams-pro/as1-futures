@@ -1,6 +1,6 @@
 "use client"
 
-import { AppLayout } from "@/components/layout/app-layout"
+import { PageContent } from "@/components/layout/page-content"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Shield, ArrowLeft, Users, Star } from "lucide-react"
@@ -23,7 +23,7 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
   }
 
   return (
-    <AppLayout>
+    <PageContent>
       <div className="space-y-8">
         {/* Header Navigation */}
         <div>
@@ -103,6 +103,6 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
           )}
         </div>
       </div>
-    </AppLayout>
+    </PageContent>
   )
 }

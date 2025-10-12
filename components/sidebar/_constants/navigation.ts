@@ -17,17 +17,17 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     visible: false, // Hidden for now, may be enabled in future
   },
   {
-    name: "My Favorites",
-    href: "/favorites",
-    icon: Star,
-    roles: ["scout"],
-    visible: true,
-  },
-  {
     name: "Matches",
     href: "/matches",
     icon: Video,
     roles: ["scout", "admin"],
+    visible: true,
+  },
+  {
+    name: "My Favorites",
+    href: "/favorites",
+    icon: Star,
+    roles: ["scout"],
     visible: true,
   },
   {

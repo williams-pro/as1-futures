@@ -39,17 +39,19 @@
   --deep-black: 13 13 13; /* #0D0D0D - Deep black */
 
   /* --------------------------------------------
-     TERTIARY: AS1 Amethyst Scale
-     Elegant purple for exclusive/premium features
+     TERTIARY: AS1 Purple Scale
+     Vibrant purple for exclusive/premium features
      -------------------------------------------- */
-  --as1-amethyst-100: 242 240 247; /* #F2F0F7 - Lightest lavender */
-  --as1-amethyst-200: 224 218 235; /* #E0DAEB - Light lavender */
-  --as1-amethyst-300: 195 184 214; /* #C3B8D6 - Medium light */
-  --as1-amethyst-400: 166 150 193; /* #A696C1 - Medium */
-  --as1-amethyst: 139 123 168; /* #8B7BA8 - Primary Amethyst */
-  --as1-amethyst-600: 111 98 134; /* #6F6286 - Medium dark */
-  --as1-amethyst-700: 83 74 101; /* #534A65 - Dark */
-  --as1-amethyst-800: 56 49 67; /* #383143 - Darkest */
+  --as1-purple-100: 250 245 255; /* #FAF5FF - Lightest purple */
+  --as1-purple-200: 243 232 255; /* #F3E8FF - Light purple */
+  --as1-purple-300: 233 213 255; /* #E9D5FF - Medium light */
+  --as1-purple-400: 196 181 253; /* #C4B5FD - Medium */
+  --as1-purple-500: 168 85 247; /* #A855F7 - Medium vibrant */
+  --as1-purple: 107 70 193; /* #6B46C1 - Primary Purple (Tailwind purple-600) */
+  --as1-purple-600: 107 70 193; /* #6B46C1 - Primary Purple */
+  --as1-purple-700: 88 28 135; /* #581C87 - Dark */
+  --as1-purple-800: 74 29 110; /* #4A1D6E - Darker */
+  --as1-purple-900: 59 7 100; /* #3B0764 - Darkest */
 
   /* --------------------------------------------
      ACCENT: AS1 Electric Blue
@@ -71,7 +73,7 @@
   --primary-foreground: 255 255 255;
   --secondary: 240 240 240; /* Silver White */
   --secondary-foreground: 26 26 26;
-  --tertiary: 139 123 168; /* AS1 Amethyst */
+  --tertiary: 107 70 193; /* AS1 Purple */
   --tertiary-foreground: 255 255 255;
   --muted: 240 240 240;
   --muted-foreground: 100 100 100;
@@ -127,7 +129,7 @@
   --primary-foreground: 255 255 255;
   --secondary: 42 42 42;
   --secondary-foreground: 255 255 255;
-  --tertiary: 139 123 168;
+  --tertiary: 107 70 193;
   --tertiary-foreground: 255 255 255;
   --muted: 42 42 42;
   --muted-foreground: 150 150 150;
@@ -187,16 +189,18 @@
   --color-deep-black: rgb(var(--deep-black));
 
   /* --------------------------------------------
-     COLOR PALETTE - AS1 Amethyst (Tertiary)
+     COLOR PALETTE - AS1 Purple (Tertiary)
      -------------------------------------------- */
-  --color-as1-amethyst-100: rgb(var(--as1-amethyst-100));
-  --color-as1-amethyst-200: rgb(var(--as1-amethyst-200));
-  --color-as1-amethyst-300: rgb(var(--as1-amethyst-300));
-  --color-as1-amethyst-400: rgb(var(--as1-amethyst-400));
-  --color-as1-amethyst: rgb(var(--as1-amethyst));
-  --color-as1-amethyst-600: rgb(var(--as1-amethyst-600));
-  --color-as1-amethyst-700: rgb(var(--as1-amethyst-700));
-  --color-as1-amethyst-800: rgb(var(--as1-amethyst-800));
+  --color-as1-purple-100: rgb(var(--as1-purple-100));
+  --color-as1-purple-200: rgb(var(--as1-purple-200));
+  --color-as1-purple-300: rgb(var(--as1-purple-300));
+  --color-as1-purple-400: rgb(var(--as1-purple-400));
+  --color-as1-purple-500: rgb(var(--as1-purple-500));
+  --color-as1-purple: rgb(var(--as1-purple));
+  --color-as1-purple-600: rgb(var(--as1-purple-600));
+  --color-as1-purple-700: rgb(var(--as1-purple-700));
+  --color-as1-purple-800: rgb(var(--as1-purple-800));
+  --color-as1-purple-900: rgb(var(--as1-purple-900));
 
   /* --------------------------------------------
      COLOR PALETTE - Accent
@@ -256,6 +260,14 @@
   --color-sidebar-accent-foreground: rgb(var(--sidebar-accent-foreground));
   --color-sidebar-border: rgb(var(--sidebar-border));
   --color-sidebar-ring: rgb(var(--sidebar-ring));
+
+  /* --------------------------------------------
+     BACKGROUND GRADIENTS
+     Reusable gradient backgrounds
+     -------------------------------------------- */
+  --gradient-as1-primary: linear-gradient(to bottom right, rgb(248 250 252), rgb(255 255 255), rgb(207 150 22 / 0.1));
+  --gradient-as1-secondary: linear-gradient(to bottom right, rgb(248 250 252), rgb(255 255 255), rgb(139 123 168 / 0.1));
+  --gradient-as1-subtle: linear-gradient(to bottom right, rgb(248 250 252), rgb(255 255 255), rgb(207 150 22 / 0.05));
 }
 
 /* ============================================
@@ -326,6 +338,20 @@
   }
   .text-pretty {
     text-wrap: pretty;
+  }
+
+  /* --------------------------------------------
+     BACKGROUND GRADIENTS
+     Reusable gradient utility classes
+     -------------------------------------------- */
+  .bg-gradient-as1-primary {
+    background: var(--gradient-as1-primary);
+  }
+  .bg-gradient-as1-secondary {
+    background: var(--gradient-as1-secondary);
+  }
+  .bg-gradient-as1-subtle {
+    background: var(--gradient-as1-subtle);
   }
 }
 

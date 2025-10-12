@@ -19,8 +19,6 @@ export function LogoCollapsed({ className, size = "md" }: LogoCollapsedProps) {
   return (
     <div className={cn(
       'flex items-center justify-center',
-      'transition-all duration-300 ease-in-out',
-      'hover:scale-110 hover:rotate-3',
       className
     )}>
       <Image

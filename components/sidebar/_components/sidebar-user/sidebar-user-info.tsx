@@ -4,9 +4,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { User } from "@/lib/types"
-import { LogOut, Star, Gem } from "lucide-react"
+import { Star, Gem, LogOut } from "lucide-react"
 import { useState } from "react"
-import { ConfirmDialog } from "@/app/favorites/_components/confirm-dialog"
+import { ConfirmDialog } from "@/app/(private)/favorites/_components/confirm-dialog"
 import { useAuth } from "@/contexts/auth-context"
 
 interface SidebarUserInfoProps {
@@ -66,26 +66,27 @@ export function SidebarUserInfo({
             </div>
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Gem className="h-3 w-3 text-purple-500" />
+                <Gem className="h-3 w-3 text-as1-purple-500" />
                 <span className="font-medium">Exclusives</span>
               </div>
-              <span className="font-mono font-semibold text-purple-600">{exclusivesCount} / 3</span>
+              <span className="font-mono font-semibold text-as1-purple-600">{exclusivesCount} / 3</span>
             </div>
           </div>
         )}
 
-        {/* Logout Button */}
-        {!isCollapsed && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowLogoutDialog(true)}
-            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-slate-100 border border-transparent hover:border-slate-200"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Logout</span>
-          </Button>
-        )}
+        {/* Logout Button - Always visible */}
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-start text-muted-foreground hover:text-foreground hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all duration-200 mt-3 px-3 py-2",
+            isCollapsed && "justify-center px-2",
+          )}
+          onClick={() => setShowLogoutDialog(true)}
+          title={isCollapsed ? "Logout" : undefined}
+        >
+          <LogOut className={cn("h-5 w-5", !isCollapsed && "mr-3")} />
+          {!isCollapsed && "Logout"}
+        </Button>
       </div>
 
       <ConfirmDialog

@@ -1,6 +1,6 @@
 "use client"
 
-import { AppLayout } from "@/components/layout/app-layout"
+import { PageContent } from "@/components/layout/page-content"
 import { MatchCard } from "./_components/match-card"
 import { MatchesFilter } from "./_components/matches-filter"
 import { useMatchesFilter } from "./_hooks/use-matches-filter"
@@ -10,7 +10,7 @@ export default function MatchesPage() {
   const { selectedStatus, setSelectedStatus, filteredMatches } = useMatchesFilter()
 
   return (
-    <AppLayout>
+    <PageContent>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground text-balance">Matches</h1>
@@ -39,6 +39,6 @@ export default function MatchesPage() {
           </div>
         )}
       </div>
-    </AppLayout>
+    </PageContent>
   )
 }
