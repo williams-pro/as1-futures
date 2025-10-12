@@ -19,7 +19,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push("/login")
+      router.push("/") // La página de login está en la ruta raíz
     }
   }, [user, isLoading, router])
 
