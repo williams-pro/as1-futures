@@ -421,3 +421,36 @@
   );
   background-size: 1000px 100%;
 }
+
+/* Custom scrollbar styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--light-gray)) rgb(var(--pearl-white));
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgb(var(--pearl-white));
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(var(--light-gray));
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--medium-gray));
+}
+
+.scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+  background: rgb(var(--light-gray));
+}
+
+.scrollbar-track-gray-100::-webkit-scrollbar-track {
+  background: rgb(var(--pearl-white));
+}

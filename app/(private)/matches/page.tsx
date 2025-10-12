@@ -4,6 +4,7 @@ import { MatchCard } from "./_components/match-card"
 import { MatchesFilter } from "./_components/matches-filter"
 import { useMatchesFilter } from "./_hooks/use-matches-filter"
 import { Video } from "lucide-react"
+import { MATCHES_TEXTS } from "./_constants/matches"
 
 export default function MatchesPage() {
   const { selectedStatus, setSelectedStatus, filteredMatches } = useMatchesFilter()
@@ -11,8 +12,8 @@ export default function MatchesPage() {
   return (
     <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground text-balance">Matches</h1>
-          <p className="mt-2 text-muted-foreground">View match schedule and watch game videos</p>
+          <h1 className="text-3xl font-bold text-foreground text-balance">{MATCHES_TEXTS.UI.PAGE_TITLE}</h1>
+          <p className="mt-2 text-muted-foreground">{MATCHES_TEXTS.UI.PAGE_DESCRIPTION}</p>
         </div>
 
         <MatchesFilter
@@ -32,8 +33,8 @@ export default function MatchesPage() {
             <div className="mb-4 rounded-full bg-primary/10 p-6">
               <Video className="h-12 w-12 text-primary" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-foreground">No matches found</h3>
-            <p className="text-muted-foreground">Try adjusting your filters</p>
+            <h3 className="mb-2 text-lg font-semibold text-foreground">{MATCHES_TEXTS.UI.NO_MATCHES_TITLE}</h3>
+            <p className="text-muted-foreground">{MATCHES_TEXTS.UI.NO_MATCHES_DESCRIPTION}</p>
           </div>
         )}
       </div>
