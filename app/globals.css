@@ -1,0 +1,397 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ============================================
+     AS1 FUTURES COLOR SYSTEM
+     RGB format for Tailwind v4 compatibility
+     ============================================ */
+
+  /* --------------------------------------------
+     PRIMARY: AS1 Gold Scale
+     Brand primary color - warm, prestigious
+     -------------------------------------------- */
+  --as1-gold-100: 252 246 234; /* #FCF6EA - Lightest gold tint */
+  --as1-gold-200: 245 229 195; /* #F5E5C3 - Light gold */
+  --as1-gold-300: 235 204 138; /* #EBCC8A - Medium light */
+  --as1-gold-400: 225 179 81; /* #E1B351 - Medium */
+  --as1-gold: 207 150 22; /* #CF9616 - Primary AS1 Gold */
+  --as1-gold-600: 165 120 18; /* #A57812 - Medium dark */
+  --as1-gold-700: 124 90 13; /* #7C5A0D - Dark */
+  --as1-gold-800: 83 60 9; /* #533C09 - Darkest */
+
+  /* --------------------------------------------
+     SECONDARY: AS1 Neutrals Scale
+     Grayscale palette for backgrounds and text
+     -------------------------------------------- */
+  --pure-white: 255 255 255; /* #FFFFFF - Pure white */
+  --snow-white: 254 254 254; /* #FEFEFE - Near white */
+  --pearl-white: 248 248 248; /* #F8F8F8 - Soft white */
+  --silver-white: 240 240 240; /* #F0F0F0 - Light gray */
+  --platinum: 232 232 232; /* #E8E8E8 - Platinum */
+  --light-gray: 200 200 200; /* #C8C8C8 - Light gray */
+  --medium-gray: 150 150 150; /* #969696 - Medium gray */
+  --dark-gray: 100 100 100; /* #646464 - Dark gray */
+  --graphite: 42 42 42; /* #2A2A2A - Graphite */
+  --as1-charcoal: 26 26 26; /* #1A1A1A - AS1 Charcoal */
+  --deep-black: 13 13 13; /* #0D0D0D - Deep black */
+
+  /* --------------------------------------------
+     TERTIARY: AS1 Amethyst Scale
+     Elegant purple for exclusive/premium features
+     -------------------------------------------- */
+  --as1-amethyst-100: 242 240 247; /* #F2F0F7 - Lightest lavender */
+  --as1-amethyst-200: 224 218 235; /* #E0DAEB - Light lavender */
+  --as1-amethyst-300: 195 184 214; /* #C3B8D6 - Medium light */
+  --as1-amethyst-400: 166 150 193; /* #A696C1 - Medium */
+  --as1-amethyst: 139 123 168; /* #8B7BA8 - Primary Amethyst */
+  --as1-amethyst-600: 111 98 134; /* #6F6286 - Medium dark */
+  --as1-amethyst-700: 83 74 101; /* #534A65 - Dark */
+  --as1-amethyst-800: 56 49 67; /* #383143 - Darkest */
+
+  /* --------------------------------------------
+     ACCENT: AS1 Electric Blue
+     Distinctive accent for interactive elements
+     -------------------------------------------- */
+  --as1-electric-blue: 0 122 255; /* #007AFF - Electric blue */
+
+  /* --------------------------------------------
+     SEMANTIC COLOR MAPPINGS
+     shadcn/ui compatible semantic tokens
+     -------------------------------------------- */
+  --background: 255 255 255;
+  --foreground: 26 26 26;
+  --card: 255 255 255;
+  --card-foreground: 26 26 26;
+  --popover: 255 255 255;
+  --popover-foreground: 26 26 26;
+  --primary: 207 150 22; /* AS1 Gold */
+  --primary-foreground: 255 255 255;
+  --secondary: 240 240 240; /* Silver White */
+  --secondary-foreground: 26 26 26;
+  --tertiary: 139 123 168; /* AS1 Amethyst */
+  --tertiary-foreground: 255 255 255;
+  --muted: 240 240 240;
+  --muted-foreground: 100 100 100;
+  --accent: 245 229 195; /* AS1 Gold 200 */
+  --accent-foreground: 26 26 26;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --border: 232 232 232; /* Platinum */
+  --input: 232 232 232;
+  --ring: 207 150 22; /* AS1 Gold */
+
+  /* --------------------------------------------
+     CHART COLORS
+     Data visualization palette
+     -------------------------------------------- */
+  --chart-1: 207 150 22; /* AS1 Gold */
+  --chart-2: 42 42 42; /* Graphite */
+  --chart-3: 165 120 18; /* AS1 Gold 600 */
+  --chart-4: 245 229 195; /* AS1 Gold 200 */
+  --chart-5: 100 100 100; /* Dark Gray */
+
+  /* --------------------------------------------
+     BORDER RADIUS
+     Consistent corner rounding
+     -------------------------------------------- */
+  --radius: 0.625rem; /* 10px - Base radius */
+
+  /* --------------------------------------------
+     SIDEBAR COLORS
+     Sidebar-specific semantic tokens
+     -------------------------------------------- */
+  --sidebar: 248 248 248; /* Pearl White */
+  --sidebar-foreground: 26 26 26;
+  --sidebar-primary: 207 150 22;
+  --sidebar-primary-foreground: 255 255 255;
+  --sidebar-accent: 240 240 240;
+  --sidebar-accent-foreground: 26 26 26;
+  --sidebar-border: 232 232 232;
+  --sidebar-ring: 207 150 22;
+}
+
+.dark {
+  /* ============================================
+     DARK MODE OVERRIDES
+     ============================================ */
+  --background: 26 26 26;
+  --foreground: 255 255 255;
+  --card: 26 26 26;
+  --card-foreground: 255 255 255;
+  --popover: 26 26 26;
+  --popover-foreground: 255 255 255;
+  --primary: 207 150 22;
+  --primary-foreground: 255 255 255;
+  --secondary: 42 42 42;
+  --secondary-foreground: 255 255 255;
+  --tertiary: 139 123 168;
+  --tertiary-foreground: 255 255 255;
+  --muted: 42 42 42;
+  --muted-foreground: 150 150 150;
+  --accent: 42 42 42;
+  --accent-foreground: 207 150 22;
+  --destructive: 220 38 38;
+  --destructive-foreground: 255 255 255;
+  --border: 42 42 42;
+  --input: 42 42 42;
+  --ring: 207 150 22;
+  --sidebar: 26 26 26;
+  --sidebar-foreground: 255 255 255;
+  --sidebar-primary: 207 150 22;
+  --sidebar-primary-foreground: 255 255 255;
+  --sidebar-accent: 42 42 42;
+  --sidebar-accent-foreground: 207 150 22;
+  --sidebar-border: 42 42 42;
+  --sidebar-ring: 207 150 22;
+}
+
+@theme inline {
+  /* ============================================
+     TAILWIND THEME CONFIGURATION
+     ============================================ */
+
+  /* --------------------------------------------
+     TYPOGRAPHY
+     -------------------------------------------- */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* --------------------------------------------
+     COLOR PALETTE - AS1 Gold
+     -------------------------------------------- */
+  --color-as1-gold-100: rgb(var(--as1-gold-100));
+  --color-as1-gold-200: rgb(var(--as1-gold-200));
+  --color-as1-gold-300: rgb(var(--as1-gold-300));
+  --color-as1-gold-400: rgb(var(--as1-gold-400));
+  --color-as1-gold: rgb(var(--as1-gold));
+  --color-as1-gold-600: rgb(var(--as1-gold-600));
+  --color-as1-gold-700: rgb(var(--as1-gold-700));
+  --color-as1-gold-800: rgb(var(--as1-gold-800));
+
+  /* --------------------------------------------
+     COLOR PALETTE - AS1 Neutrals
+     -------------------------------------------- */
+  --color-pure-white: rgb(var(--pure-white));
+  --color-snow-white: rgb(var(--snow-white));
+  --color-pearl-white: rgb(var(--pearl-white));
+  --color-silver-white: rgb(var(--silver-white));
+  --color-platinum: rgb(var(--platinum));
+  --color-light-gray: rgb(var(--light-gray));
+  --color-medium-gray: rgb(var(--medium-gray));
+  --color-dark-gray: rgb(var(--dark-gray));
+  --color-graphite: rgb(var(--graphite));
+  --color-as1-charcoal: rgb(var(--as1-charcoal));
+  --color-deep-black: rgb(var(--deep-black));
+
+  /* --------------------------------------------
+     COLOR PALETTE - AS1 Amethyst (Tertiary)
+     -------------------------------------------- */
+  --color-as1-amethyst-100: rgb(var(--as1-amethyst-100));
+  --color-as1-amethyst-200: rgb(var(--as1-amethyst-200));
+  --color-as1-amethyst-300: rgb(var(--as1-amethyst-300));
+  --color-as1-amethyst-400: rgb(var(--as1-amethyst-400));
+  --color-as1-amethyst: rgb(var(--as1-amethyst));
+  --color-as1-amethyst-600: rgb(var(--as1-amethyst-600));
+  --color-as1-amethyst-700: rgb(var(--as1-amethyst-700));
+  --color-as1-amethyst-800: rgb(var(--as1-amethyst-800));
+
+  /* --------------------------------------------
+     COLOR PALETTE - Accent
+     -------------------------------------------- */
+  --color-as1-electric-blue: rgb(var(--as1-electric-blue));
+
+  /* --------------------------------------------
+     SEMANTIC COLORS
+     -------------------------------------------- */
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-tertiary: rgb(var(--tertiary));
+  --color-tertiary-foreground: rgb(var(--tertiary-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+
+  /* --------------------------------------------
+     CHART COLORS
+     -------------------------------------------- */
+  --color-chart-1: rgb(var(--chart-1));
+  --color-chart-2: rgb(var(--chart-2));
+  --color-chart-3: rgb(var(--chart-3));
+  --color-chart-4: rgb(var(--chart-4));
+  --color-chart-5: rgb(var(--chart-5));
+
+  /* --------------------------------------------
+     BORDER RADIUS
+     -------------------------------------------- */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* --------------------------------------------
+     SIDEBAR
+     -------------------------------------------- */
+  --color-sidebar: rgb(var(--sidebar));
+  --color-sidebar-foreground: rgb(var(--sidebar-foreground));
+  --color-sidebar-primary: rgb(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: rgb(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: rgb(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: rgb(var(--sidebar-accent-foreground));
+  --color-sidebar-border: rgb(var(--sidebar-border));
+  --color-sidebar-ring: rgb(var(--sidebar-ring));
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ============================================
+   AS1 UTILITY CLASSES
+   ============================================ */
+@layer utilities {
+  /* --------------------------------------------
+     ELEVATION SHADOWS
+     Subtle depth for cards and components
+     -------------------------------------------- */
+  .shadow-elevation-1 {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-elevation-2 {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+  .shadow-elevation-3 {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+  .shadow-elevation-4 {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  /* --------------------------------------------
+     HOVER EFFECTS
+     Interactive feedback animations
+     -------------------------------------------- */
+  .hover-lift {
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .hover-gold {
+    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hover-gold:hover {
+    color: rgb(var(--as1-gold));
+  }
+
+  .hover-amethyst {
+    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hover-amethyst:hover {
+    color: rgb(var(--as1-amethyst));
+  }
+
+  /* --------------------------------------------
+     TEXT UTILITIES
+     Typography enhancements
+     -------------------------------------------- */
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(4px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in {
+  animation: fade-in 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-up {
+  animation: slide-up 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-scale-in {
+  animation: scale-in 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite linear;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--pearl-white)) 0%,
+    rgb(var(--silver-white)) 50%,
+    rgb(var(--pearl-white)) 100%
+  );
+  background-size: 1000px 100%;
+}
