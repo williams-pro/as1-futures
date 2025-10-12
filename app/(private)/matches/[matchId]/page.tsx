@@ -1,4 +1,4 @@
-import { PageContent } from "@/components/layout/page-content"
+import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,13 +11,14 @@ import { VideoPlayer } from "./_components/video-player"
 import { cn } from "@/lib/utils"
 
 interface MatchDetailPageProps {
-  params: {
+  params: Promise<{
     matchId: string
-  }
+  }>
 }
 
 export default function MatchDetailPage({ params }: MatchDetailPageProps) {
-  const match = MOCK_MATCHES.find((m) => m.id === params.matchId)
+  const { matchId } = use(params)
+  const match = MOCK_MATCHES.find((m) => m.id === matchId)
 
   if (!match) {
     notFound()
@@ -49,8 +50,7 @@ export default function MatchDetailPage({ params }: MatchDetailPageProps) {
   }
 
   return (
-    <PageContent>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <Link href="/matches">
             <Button variant="ghost" className="gap-2 hover:bg-accent">
@@ -185,6 +185,5 @@ export default function MatchDetailPage({ params }: MatchDetailPageProps) {
           </Card>
         </div>
       </div>
-    </PageContent>
   )
 }

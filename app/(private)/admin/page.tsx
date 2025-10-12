@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { PageContent } from "@/components/layout/page-content"
 import { ScoutManagement } from "./_components/scout-management"
 import { DataManagementTabs } from "./_components/data-management-tabs"
 import { MetricsDashboard } from "./_components/metrics-dashboard"
@@ -249,8 +248,7 @@ export default function AdminPage() {
   }
 
   return (
-    <PageContent>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
           <p className="mt-2 text-muted-foreground">Manage tournament data, scouts, and view analytics</p>
@@ -315,6 +313,5 @@ export default function AdminPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </PageContent>
   )
 }

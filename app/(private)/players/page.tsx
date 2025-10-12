@@ -1,6 +1,5 @@
 "use client"
 
-import { PageContent } from "@/components/layout/page-content"
 import { PlayerFilters } from "./_components/player-filters"
 import { PlayerGrid } from "./_components/player-grid"
 import { usePlayerFilters } from "./_hooks/use-player-filters"
@@ -18,8 +17,7 @@ export default function PlayersPage() {
   } = usePlayerFilters()
 
   return (
-    <PageContent>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground text-balance">Players</h1>
           <p className="mt-2 text-muted-foreground">Browse and search all tournament players</p>
@@ -38,6 +36,5 @@ export default function PlayersPage() {
 
         <PlayerGrid players={filteredPlayers} />
       </div>
-    </PageContent>
   )
 }

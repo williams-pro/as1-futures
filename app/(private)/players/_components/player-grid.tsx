@@ -1,7 +1,7 @@
 "use client"
 
 import type { Player } from "@/lib/types"
-import { PlayerListItem } from "@/app/(private)/teams/[teamId]/_components/player-list-item"
+import { PlayerListItem } from "@/components/shared/player-list-item"
 import { Users } from "lucide-react"
 
 interface PlayerGridProps {

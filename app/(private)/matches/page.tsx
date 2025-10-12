@@ -1,6 +1,5 @@
 "use client"
 
-import { PageContent } from "@/components/layout/page-content"
 import { MatchCard } from "./_components/match-card"
 import { MatchesFilter } from "./_components/matches-filter"
 import { useMatchesFilter } from "./_hooks/use-matches-filter"
@@ -10,8 +9,7 @@ export default function MatchesPage() {
   const { selectedStatus, setSelectedStatus, filteredMatches } = useMatchesFilter()
 
   return (
-    <PageContent>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground text-balance">Matches</h1>
           <p className="mt-2 text-muted-foreground">View match schedule and watch game videos</p>
@@ -39,6 +37,5 @@ export default function MatchesPage() {
           </div>
         )}
       </div>
-    </PageContent>
   )
 }

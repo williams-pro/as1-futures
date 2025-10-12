@@ -1,30 +1,30 @@
 "use client"
 
-import { PageContent } from "@/components/layout/page-content"
+import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Shield, ArrowLeft, Users, Star } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { PlayerListItem } from "./_components/player-list-item"
+import { PlayerListItem } from "@/components/shared/player-list-item"
 import { useTeamDetail } from "./_hooks/use-team-detail"
 
 interface TeamDetailPageProps {
-  params: {
+  params: Promise<{
     teamId: string
-  }
+  }>
 }
 
 export default function TeamDetailPage({ params }: TeamDetailPageProps) {
-  const { team, players } = useTeamDetail(params.teamId)
+  const { teamId } = use(params)
+  const { team, players } = useTeamDetail(teamId)
 
   if (!team) {
     notFound()
   }
 
   return (
-    <PageContent>
-      <div className="space-y-8">
+    <div className="space-y-8">
         {/* Header Navigation */}
         <div>
           <Link href="/teams">
@@ -87,9 +87,11 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
           </div>
 
           {players.length > 0 ? (
-            <div className="space-y-3">
+            <div className="flex flex-wrap gap-4">
               {players.map((player) => (
-                <PlayerListItem key={player.id} player={player} />
+                <div key={player.id} className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.67rem)] xl:w-[calc(25%-0.75rem)]">
+                  <PlayerListItem player={player} />
+                </div>
               ))}
             </div>
           ) : (
@@ -103,6 +105,5 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
           )}
         </div>
       </div>
-    </PageContent>
   )
 }

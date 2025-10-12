@@ -1,6 +1,6 @@
 "use client"
 
-import { PageContent } from "@/components/layout/page-content"
+import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -15,12 +15,13 @@ import { usePlayerDetail } from "./_hooks/use-player-detail"
 import { cn } from "@/lib/utils"
 
 interface PlayerDetailPageProps {
-  params: {
+  params: Promise<{
     playerId: string
-  }
+  }>
 }
 
 export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
+  const { playerId } = use(params)
   const {
     player,
     team,
@@ -36,7 +37,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
     setShowRemoveExclusiveDialog,
     confirmRemoveFavorite,
     confirmRemoveExclusive,
-  } = usePlayerDetail(params.playerId)
+  } = usePlayerDetail(playerId)
 
   if (!player) {
     notFound()
@@ -45,9 +46,8 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
   const initials = `${player.firstName[0]}${player.lastName[0]}`
 
   return (
-    <PageContent>
-      <TooltipProvider delayDuration={300}>
-        <div className="space-y-8">
+    <TooltipProvider delayDuration={300}>
+      <div className="space-y-8">
           {/* Header Navigation */}
           <div>
             {team ? (
@@ -229,6 +229,5 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
           onConfirm={confirmRemoveExclusive}
         />
       </TooltipProvider>
-    </PageContent>
   )
 }
