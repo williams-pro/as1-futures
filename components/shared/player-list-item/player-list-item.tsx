@@ -10,8 +10,7 @@ import { PlayerCardInfo } from "./_components/player-card-info"
 import { PlayerCardExclusiveDialog } from "./_components/player-card-exclusive-dialog"
 import { cn } from "@/lib/utils"
 import type { Player } from "@/lib/types"
-import { useFavorites } from "@/contexts/favorites-context"
-import { useAuth } from "@/contexts/auth-context"
+import { usePlayerActions } from "@/hooks/use-player-actions"
 import { useState } from "react"
 import { PLAYER_LIST_ITEM_TEXTS } from "./_constants/player-list-item"
 
@@ -20,53 +19,21 @@ interface PlayerListItemProps {
 }
 
 export function PlayerListItem({ player }: PlayerListItemProps) {
-  const { user } = useAuth()
-  const { isFavorite, isExclusive, toggleFavorite, toggleExclusive, canAddExclusive } = useFavorites()
-
-  const [showExclusiveModal, setShowExclusiveModal] = useState(false)
-
-  const playerIsFavorite = isFavorite(player.id)
-  const playerIsExclusive = isExclusive(player.id)
-  const canMarkExclusive = canAddExclusive() || playerIsExclusive
-
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    
-    // Si es exclusivo y favorito, no permitir remover favorito
-    if (playerIsExclusive && playerIsFavorite) {
-      // Mostrar feedback visual - el botón ya está deshabilitado
-      return
-    }
-    
-    if (user) {
-      toggleFavorite(player.id, user.id)
-    }
-  }
-
-  const handleExclusiveClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (user && canMarkExclusive) {
-      if (playerIsExclusive) {
-        setShowExclusiveModal(true)
-      } else {
-        toggleExclusive(player.id, user.id)
-      }
-    }
-  }
-
-  const confirmRemoveExclusive = () => {
-    if (user) {
-      toggleExclusive(player.id, user.id)
-      setShowExclusiveModal(false)
-    }
-  }
-
-  const cancelRemoveExclusive = () => {
-    setShowExclusiveModal(false)
-  }
+  const {
+    user,
+    playerIsFavorite,
+    playerIsExclusive,
+    canMarkExclusive,
+    handleFavoriteClick,
+    handleExclusiveClick,
+    showRemoveExclusiveDialog,
+    setShowRemoveExclusiveDialog,
+    confirmRemoveExclusive,
+    cancelRemoveExclusive,
+  } = usePlayerActions({ 
+    playerId: player.id, 
+    showConfirmationDialogs: false 
+  })
 
   // Tooltip texts
   const favoriteTooltip = playerIsExclusive && playerIsFavorite
@@ -136,8 +103,8 @@ export function PlayerListItem({ player }: PlayerListItemProps) {
 
       {/* Modal de Confirmación para Remover Exclusivo */}
       <PlayerCardExclusiveDialog
-        open={showExclusiveModal}
-        onOpenChange={setShowExclusiveModal}
+        open={showRemoveExclusiveDialog}
+        onOpenChange={setShowRemoveExclusiveDialog}
         onConfirm={confirmRemoveExclusive}
         onCancel={cancelRemoveExclusive}
         playerName={`${player.firstName} ${player.lastName}`}

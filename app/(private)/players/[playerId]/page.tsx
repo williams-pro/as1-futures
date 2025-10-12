@@ -13,6 +13,7 @@ import { PlayerHighlights } from "./_components/player-highlights"
 import { ConfirmDialog } from "./_components/confirm-dialog"
 import { usePlayerDetail } from "./_hooks/use-player-detail"
 import { cn } from "@/lib/utils"
+import { PLAYER_DETAIL_TEXTS } from "./_constants/player-detail"
 
 interface PlayerDetailPageProps {
   params: Promise<{
@@ -54,14 +55,14 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
               <Link href={`/teams/${team.id}`}>
                 <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground transition-colors">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to {team.name}
+                  {PLAYER_DETAIL_TEXTS.UI.BACK_TO_TEAM} {team.name}
                 </Button>
               </Link>
             ) : (
               <Link href="/teams">
                 <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground transition-colors">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Teams
+                  {PLAYER_DETAIL_TEXTS.UI.BACK_TO_TEAMS}
                 </Button>
               </Link>
             )}
@@ -94,7 +95,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className="bg-slate-100 text-slate-700 font-mono text-sm border-0">
-                    #{player.jerseyNumber}
+                    {PLAYER_DETAIL_TEXTS.UI.JERSEY_PREFIX}{player.jerseyNumber}
                   </Badge>
                   <Badge variant="secondary" className="text-slate-600">
                     {player.position}
@@ -102,13 +103,13 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                   {playerIsFavorite && (
                     <Badge className="bg-amber-100 text-amber-700 gap-1.5 border-0">
                       <Star className="h-3 w-3 fill-amber-500" />
-                      Favorite
+                      {PLAYER_DETAIL_TEXTS.UI.FAVORITE_BADGE}
                     </Badge>
                   )}
                   {playerIsExclusive && (
-                    <Badge className="bg-slate-800 text-amber-400 gap-1.5 border-0">
-                      <Gem className="h-3 w-3 fill-amber-400" />
-                      Exclusive
+                    <Badge className="bg-as1-purple-100 text-as1-purple-700 gap-1.5 border-0">
+                      <Gem className="h-3 w-3" />
+                      {PLAYER_DETAIL_TEXTS.UI.EXCLUSIVE_BADGE}
                     </Badge>
                   )}
                 </div>
@@ -131,7 +132,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                       </div>
                       <div className="text-sm text-muted-foreground flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 bg-as1-gold rounded-full" />
-                        Group {team.group}
+                        {PLAYER_DETAIL_TEXTS.UI.GROUP_PREFIX} {team.group}
                       </div>
                     </div>
                   </div>
@@ -145,25 +146,26 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                     <TooltipTrigger asChild>
                       <Button
                         onClick={handleFavoriteClick}
-                        disabled={playerIsExclusive && playerIsFavorite}
                         className={cn(
                           "gap-2 h-11 px-6 rounded-xl transition-all duration-300",
                           playerIsFavorite
-                            ? "bg-amber-500 hover:bg-amber-600 text-white shadow-lg hover:shadow-xl"
+                            ? "bg-amber-100 hover:bg-amber-200 text-amber-700 hover:text-amber-800 border border-amber-200 hover:border-amber-300"
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200",
-                          playerIsExclusive && playerIsFavorite && "opacity-50 cursor-not-allowed",
+                          playerIsExclusive && playerIsFavorite && "opacity-60 cursor-not-allowed",
                         )}
                       >
                         <Star className={cn("h-4 w-4", playerIsFavorite && "fill-current")} />
-                        {playerIsFavorite ? "Remove Favorite" : "Add to Favorites"}
+                        {playerIsFavorite ? PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.ADD}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {playerIsExclusive && playerIsFavorite
-                        ? "Cannot remove favorite while player is exclusive. Remove exclusive status first."
-                        : playerIsFavorite
-                          ? "Click to remove from favorites"
-                          : "Click to add to favorites (unlimited)"}
+                      <p className="text-xs max-w-[200px]">
+                        {playerIsExclusive && playerIsFavorite
+                          ? PLAYER_DETAIL_TEXTS.TOOLTIPS.FAVORITE.CANNOT_REMOVE
+                          : playerIsFavorite
+                            ? PLAYER_DETAIL_TEXTS.TOOLTIPS.FAVORITE.REMOVE
+                            : PLAYER_DETAIL_TEXTS.TOOLTIPS.FAVORITE.ADD}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
 
@@ -171,25 +173,30 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                     <TooltipTrigger asChild>
                       <Button
                         onClick={handleExclusiveClick}
-                        disabled={!canMarkExclusive}
                         className={cn(
                           "gap-2 h-11 px-6 rounded-xl transition-all duration-300",
                           playerIsExclusive
-                            ? "bg-slate-800 hover:bg-slate-900 text-amber-400 shadow-lg hover:shadow-xl border border-amber-400/20"
+                            ? "bg-as1-purple-100 hover:bg-as1-purple-200 text-as1-purple-700 hover:text-as1-purple-800 border border-as1-purple-200 hover:border-as1-purple-300"
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200",
-                          !canMarkExclusive && "opacity-50 cursor-not-allowed",
+                          !canMarkExclusive && !playerIsExclusive && "opacity-60 cursor-not-allowed",
                         )}
                       >
-                        <Gem className={cn("h-4 w-4", playerIsExclusive && "fill-amber-400")} />
-                        {playerIsExclusive ? "Remove Exclusive" : "Mark as Exclusive"}
+                        <Gem 
+                          className="h-4 w-4" 
+                          strokeWidth={2.5}
+                          color={playerIsExclusive ? "currentColor" : "#6b7280"}
+                        />
+                        {playerIsExclusive ? PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.ADD}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {!canMarkExclusive
-                        ? "Maximum exclusives reached (3/3). Remove one first."
-                        : playerIsExclusive
-                          ? "Click to remove exclusive status. Player will remain in favorites."
-                          : "Click to mark as exclusive (max 3 players). Automatically adds to favorites."}
+                      <p className="text-xs max-w-[200px]">
+                        {!canMarkExclusive && !playerIsExclusive
+                          ? PLAYER_DETAIL_TEXTS.TOOLTIPS.EXCLUSIVE.LIMIT_REACHED
+                          : playerIsExclusive
+                            ? PLAYER_DETAIL_TEXTS.TOOLTIPS.EXCLUSIVE.REMOVE
+                            : PLAYER_DETAIL_TEXTS.TOOLTIPS.EXCLUSIVE.ADD}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -202,8 +209,8 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
           {/* Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            <PlayerInfoCard player={player} />
-            <PlayerHighlights videoUrls={player.videoUrls} />
+            <PlayerInfoCard player={player} team={team || undefined} />
+            <PlayerHighlights videoUrls={player.videoUrl ? [player.videoUrl] : []} />
           </div>
         </div>
 
@@ -211,10 +218,10 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
         <ConfirmDialog
           open={showRemoveFavoriteDialog}
           onOpenChange={setShowRemoveFavoriteDialog}
-          title="Remove from Favorites?"
-          description={`Are you sure you want to remove ${player.firstName} ${player.lastName} from your favorites? This action cannot be undone.`}
-          confirmText="Remove"
-          cancelText="Cancel"
+          title={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_FAVORITE.TITLE}
+          description={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_FAVORITE.DESCRIPTION(player.firstName, player.lastName)}
+          confirmText={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_FAVORITE.CONFIRM}
+          cancelText={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_FAVORITE.CANCEL}
           onConfirm={confirmRemoveFavorite}
           variant="destructive"
         />
@@ -222,10 +229,10 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
         <ConfirmDialog
           open={showRemoveExclusiveDialog}
           onOpenChange={setShowRemoveExclusiveDialog}
-          title="Remove Exclusive Status?"
-          description={`${player.firstName} ${player.lastName} will no longer be marked as exclusive, but will remain in your favorites. You can mark another player as exclusive.`}
-          confirmText="Remove Exclusive"
-          cancelText="Cancel"
+          title={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_EXCLUSIVE.TITLE}
+          description={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_EXCLUSIVE.DESCRIPTION(player.firstName, player.lastName)}
+          confirmText={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_EXCLUSIVE.CONFIRM}
+          cancelText={PLAYER_DETAIL_TEXTS.MODAL.REMOVE_EXCLUSIVE.CANCEL}
           onConfirm={confirmRemoveExclusive}
         />
       </TooltipProvider>

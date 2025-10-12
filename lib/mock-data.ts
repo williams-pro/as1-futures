@@ -87,8 +87,9 @@ export const MOCK_PLAYERS: Player[] = [
     height: 178,
     weight: 72,
     nationality: "Spain",
+    dominantFoot: "right",
     photoUrl: "/young-soccer-player-portrait.png",
-    videoUrls: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "https://www.youtube.com/watch?v=jNQXAC9IVRw"],
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     stats: {
       gamesPlayed: 12,
       goals: 8,
@@ -109,6 +110,7 @@ export const MOCK_PLAYERS: Player[] = [
     height: 175,
     weight: 68,
     nationality: "Spain",
+    dominantFoot: "left",
     stats: {
       gamesPlayed: 11,
       goals: 3,
@@ -129,8 +131,9 @@ export const MOCK_PLAYERS: Player[] = [
     height: 182,
     weight: 76,
     nationality: "Spain",
+    dominantFoot: "right",
     photoUrl: "/soccer-defender-portrait.jpg",
-    videoUrls: ["https://www.youtube.com/watch?v=9bZkp7q19f0"],
+    videoUrl: "https://www.youtube.com/watch?v=9bZkp7q19f0",
     stats: {
       gamesPlayed: 12,
       goals: 1,
@@ -152,6 +155,7 @@ export const MOCK_PLAYERS: Player[] = [
     height: 180,
     weight: 74,
     nationality: "Spain",
+    dominantFoot: "both",
     stats: {
       gamesPlayed: 10,
       goals: 6,
@@ -173,11 +177,7 @@ export const MOCK_PLAYERS: Player[] = [
     weight: 70,
     nationality: "Spain",
     photoUrl: "/young-midfielder-soccer.jpg",
-    videoUrls: [
-      "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
-      "https://www.youtube.com/watch?v=2Vv-BfVoq4g",
-      "https://www.youtube.com/watch?v=60ItHLz5WEA",
-    ],
+    videoUrl: "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
     stats: {
       gamesPlayed: 11,
       goals: 4,
@@ -284,7 +284,7 @@ export const MOCK_PLAYERS: Player[] = [
     weight: 75,
     nationality: "Portugal",
     photoUrl: "/portuguese-soccer-forward.jpg",
-    videoUrls: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "https://www.youtube.com/watch?v=jNQXAC9IVRw"],
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     stats: {
       gamesPlayed: 11,
       goals: 7,
@@ -306,11 +306,7 @@ export const MOCK_PLAYERS: Player[] = [
     weight: 66,
     nationality: "Portugal",
     photoUrl: "/young-midfielder-soccer.jpg",
-    videoUrls: [
-      "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
-      "https://www.youtube.com/watch?v=2Vv-BfVoq4g",
-      "https://www.youtube.com/watch?v=60ItHLz5WEA",
-    ],
+    videoUrl: "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
     stats: {
       gamesPlayed: 12,
       goals: 5,
@@ -332,7 +328,7 @@ export const MOCK_PLAYERS: Player[] = [
     weight: 78,
     nationality: "Portugal",
     photoUrl: "/soccer-defender-portrait.jpg",
-    videoUrls: ["https://www.youtube.com/watch?v=9bZkp7q19f0"],
+    videoUrl: "https://www.youtube.com/watch?v=9bZkp7q19f0",
     stats: {
       gamesPlayed: 12,
       goals: 1,

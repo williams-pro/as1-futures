@@ -34,6 +34,7 @@ export interface Player {
   height?: number
   weight?: number
   nationality: string
+  dominantFoot?: "left" | "right" | "both"
   stats?: PlayerStats
 }
 
