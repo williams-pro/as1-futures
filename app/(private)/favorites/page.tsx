@@ -55,13 +55,13 @@ export default function FavoritesPage() {
                 <p className="text-xs text-muted-foreground">{FAVORITES_TEXTS.SAVE_BANNER.DESCRIPTION}</p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 px-2 py-1">
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={handleDiscardChanges} 
                 className={cn(
-                  "gap-2 border-slate-300 hover:border-slate-400",
+                  "gap-2 border-slate-300 hover:border-slate-400 px-4 py-2",
                   "transition-colors duration-200"
                 )}
                 aria-label={FAVORITES_TEXTS.ALT_TEXTS.DISCARD_ICON}
@@ -73,7 +73,7 @@ export default function FavoritesPage() {
                 size="sm" 
                 onClick={handleSaveChanges} 
                 className={cn(
-                  "gap-2 bg-slate-900 hover:bg-slate-800 text-white",
+                  "gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2",
                   "transition-colors duration-200"
                 )}
                 aria-label={FAVORITES_TEXTS.ALT_TEXTS.SAVE_ICON}
