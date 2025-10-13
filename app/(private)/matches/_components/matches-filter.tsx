@@ -3,24 +3,23 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface MatchesFilterProps {
-  selectedStatus: string
-  onStatusChange: (value: string) => void
+  selectedGroup: string
+  onGroupChange: (value: string) => void
   resultCount: number
 }
 
-export function MatchesFilter({ selectedStatus, onStatusChange, resultCount }: MatchesFilterProps) {
+export function MatchesFilter({ selectedGroup, onGroupChange, resultCount }: MatchesFilterProps) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-4">
-        <Select value={selectedStatus} onValueChange={onStatusChange}>
+        <Select value={selectedGroup} onValueChange={onGroupChange}>
           <SelectTrigger className="w-[180px] border-silver-white">
-            <SelectValue placeholder="All Matches" />
+            <SelectValue placeholder="All Groups" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Matches</SelectItem>
-            <SelectItem value="scheduled">Scheduled</SelectItem>
-            <SelectItem value="live">Live</SelectItem>
-            <SelectItem value="finished">Finished</SelectItem>
+            <SelectItem value="all">All Groups</SelectItem>
+            <SelectItem value="A">Group A</SelectItem>
+            <SelectItem value="B">Group B</SelectItem>
           </SelectContent>
         </Select>
       </div>

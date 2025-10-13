@@ -7,11 +7,35 @@ import { Shield, Calendar, Video, Play } from "lucide-react"
 import type { Match } from "@/lib/types"
 import { getTeamById } from "@/lib/mock-data"
 import Link from "next/link"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { MATCHES_TEXTS } from "../_constants/matches"
 
 interface MatchCardProps {
   match: Match
+}
+
+// Helper component for team logo
+function TeamLogo({ team, className }: { team: any; className?: string }) {
+  if (team?.logoUrl) {
+    return (
+      <div className={cn("relative overflow-hidden rounded-lg", className)}>
+        <Image
+          src={team.logoUrl}
+          alt={MATCHES_TEXTS.ALT_TEXTS.TEAM_LOGO(team.name)}
+          width={48}
+          height={48}
+          className="h-full w-full object-contain"
+        />
+      </div>
+    )
+  }
+  
+  return (
+    <div className={cn("flex items-center justify-center rounded-lg bg-primary/10", className)}>
+      <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+    </div>
+  )
 }
 
 export function MatchCard({ match }: MatchCardProps) {
@@ -26,25 +50,27 @@ export function MatchCard({ match }: MatchCardProps) {
     year: "numeric",
   })
 
-  const statusColors = {
-    scheduled: "bg-secondary text-secondary-foreground",
-    live: "bg-destructive text-destructive-foreground animate-pulse",
-    finished: "bg-primary text-primary-foreground",
+  // Determine the group based on the teams
+  const group = homeTeam?.group || awayTeam?.group || "A"
+  const groupColors = {
+    A: "bg-blue-100 text-blue-800 border-blue-200",
+    B: "bg-green-100 text-green-800 border-green-200",
   }
 
-  const statusLabels = {
-    scheduled: MATCHES_TEXTS.MATCH_CARD.STATUS.SCHEDULED,
-    live: MATCHES_TEXTS.MATCH_CARD.STATUS.LIVE,
-    finished: MATCHES_TEXTS.MATCH_CARD.STATUS.FINISHED,
+  const groupLabels = {
+    A: MATCHES_TEXTS.MATCH_CARD.GROUPS.A,
+    B: MATCHES_TEXTS.MATCH_CARD.GROUPS.B,
   }
 
   return (
     <Card className="group bg-white border border-border hover:border-primary/50 hover:shadow-md transition-all duration-200 rounded-lg overflow-hidden">
       <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
-          {/* Header - Status and Date */}
+          {/* Header - Group and Date */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <Badge className={cn("font-medium w-fit", statusColors[match.status])}>{statusLabels[match.status]}</Badge>
+            <Badge className={cn("font-medium w-fit border", groupColors[group as keyof typeof groupColors])}>
+              {groupLabels[group as keyof typeof groupLabels]}
+            </Badge>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>{formattedDate}</span>
@@ -58,8 +84,8 @@ export function MatchCard({ match }: MatchCardProps) {
             {/* Home Team */}
             <Link href={`/teams/${homeTeam?.id}`} className="block group/team">
               <div className="flex items-center gap-3 hover:text-primary transition-colors cursor-pointer p-2 rounded-lg hover:bg-primary/5">
-                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 group-hover/team:bg-primary/20 transition-colors">
-                  <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                <div className="h-10 w-10 sm:h-12 sm:w-12 group-hover/team:scale-105 transition-transform">
+                  <TeamLogo team={homeTeam} className="h-full w-full" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground truncate group-hover/team:text-primary transition-colors text-sm sm:text-base">{homeTeam?.name}</p>
@@ -76,8 +102,8 @@ export function MatchCard({ match }: MatchCardProps) {
             {/* Away Team */}
             <Link href={`/teams/${awayTeam?.id}`} className="block group/team">
               <div className="flex items-center gap-3 hover:text-primary transition-colors cursor-pointer p-2 rounded-lg hover:bg-primary/5">
-                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 group-hover/team:bg-primary/20 transition-colors">
-                  <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                <div className="h-10 w-10 sm:h-12 sm:w-12 group-hover/team:scale-105 transition-transform">
+                  <TeamLogo team={awayTeam} className="h-full w-full" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground truncate group-hover/team:text-primary transition-colors text-sm sm:text-base">{awayTeam?.name}</p>

@@ -13,9 +13,6 @@ export default function TeamsPage() {
             <h1 className={cn("text-4xl font-light tracking-tight text-foreground")}>
               {TEAMS_TEXTS.PAGE.TITLE}
             </h1>
-            <p className={cn("text-lg text-muted-foreground font-light max-w-2xl")}>
-              {TEAMS_TEXTS.PAGE.DESCRIPTION}
-            </p>
           </div>
         </div>
 

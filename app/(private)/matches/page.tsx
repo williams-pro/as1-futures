@@ -7,7 +7,7 @@ import { Video } from "lucide-react"
 import { MATCHES_TEXTS } from "./_constants/matches"
 
 export default function MatchesPage() {
-  const { selectedStatus, setSelectedStatus, filteredMatches } = useMatchesFilter()
+  const { selectedGroup, setSelectedGroup, filteredMatches } = useMatchesFilter()
 
   return (
     <div className="space-y-6">
@@ -17,8 +17,8 @@ export default function MatchesPage() {
         </div>
 
         <MatchesFilter
-          selectedStatus={selectedStatus}
-          onStatusChange={setSelectedStatus}
+          selectedGroup={selectedGroup}
+          onGroupChange={setSelectedGroup}
           resultCount={filteredMatches.length}
         />
 

@@ -21,31 +21,28 @@ export function TeamCard({ team }: TeamCardProps) {
       <CardContent className={cn("p-5 flex flex-col h-full space-y-4")}>
         {/* Logo Container Circular */}
         <div className="relative mx-auto">
-          <div className={cn(
-            "relative h-20 w-20 rounded-full bg-gradient-to-br from-slate-50 to-slate-100/80",
-            "border border-border/30 group-hover:border-as1-gold/20 transition-all duration-300",
-            "overflow-hidden shadow-sm"
-          )}>
-            {team.logoUrl ? (
-              <div className="relative h-full w-full">
-                <Image
-                  src={team.logoUrl || TEAM_CARD_TEXTS.ALT_TEXTS.PLACEHOLDER_LOGO}
-                  alt={TEAM_CARD_TEXTS.ALT_TEXTS.TEAM_LOGO(team.name)}
-                  width={80}
-                  height={80}
-                  className="h-full w-full object-cover"
-                  style={{ 
-                    filter: TEAM_CARD_TEXTS.STYLES.IMAGE_FILTER
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-              </div>
-            ) : (
-              <div className="h-full w-full flex items-center justify-center">
-                <Shield className="h-8 w-8 text-slate-400/70" />
-              </div>
-            )}
-          </div>
+          {team.logoUrl ? (
+            <div className="relative h-20 w-20 rounded-full overflow-hidden">
+              <Image
+                src={team.logoUrl}
+                alt={TEAM_CARD_TEXTS.ALT_TEXTS.TEAM_LOGO(team.name)}
+                width={80}
+                height={80}
+                className="h-full w-full object-cover"
+                style={{ 
+                  filter: TEAM_CARD_TEXTS.STYLES.IMAGE_FILTER
+                }}
+              />
+            </div>
+          ) : (
+            <div className={cn(
+              "relative h-20 w-20 rounded-full bg-gradient-to-br from-slate-50 to-slate-100/80",
+              "border border-border/30 group-hover:border-as1-gold/20 transition-all duration-300",
+              "overflow-hidden shadow-sm flex items-center justify-center"
+            )}>
+              <Shield className="h-8 w-8 text-slate-400/70" />
+            </div>
+          )}
         </div>
 
         {/* Team Name y Grupo */}

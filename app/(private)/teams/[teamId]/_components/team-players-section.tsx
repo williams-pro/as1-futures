@@ -17,11 +17,9 @@ export function TeamPlayersSection({ players }: TeamPlayersSectionProps) {
       </div>
 
       {players.length > 0 ? (
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {players.map((player) => (
-            <div key={player.id} className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.67rem)] xl:w-[calc(25%-0.75rem)]">
-              <PlayerListItem player={player} />
-            </div>
+            <PlayerListItem key={player.id} player={player} />
           ))}
         </div>
       ) : (

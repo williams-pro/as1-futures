@@ -1,16 +1,20 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { MOCK_MATCHES } from "@/lib/mock-data"
+import { MOCK_MATCHES, getTeamById } from "@/lib/mock-data"
 
 export function useMatchesFilter() {
-  const [selectedStatus, setSelectedStatus] = useState<string>("all")
+  const [selectedGroup, setSelectedGroup] = useState<string>("all")
 
   const filteredMatches = useMemo(() => {
     let filtered = [...MOCK_MATCHES]
 
-    if (selectedStatus !== "all") {
-      filtered = filtered.filter((match) => match.status === selectedStatus)
+    if (selectedGroup !== "all") {
+      filtered = filtered.filter((match) => {
+        const homeTeam = getTeamById(match.homeTeamId)
+        const awayTeam = getTeamById(match.awayTeamId)
+        return homeTeam?.group === selectedGroup || awayTeam?.group === selectedGroup
+      })
     }
 
     // Sort by date (most recent first)
@@ -21,11 +25,11 @@ export function useMatchesFilter() {
     })
 
     return filtered
-  }, [selectedStatus])
+  }, [selectedGroup])
 
   return {
-    selectedStatus,
-    setSelectedStatus,
+    selectedGroup,
+    setSelectedGroup,
     filteredMatches,
   }
 }

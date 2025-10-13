@@ -14,6 +14,7 @@ export type GroupType = "A" | "B"
 
 export interface Team {
   id: string
+  team_code: string
   name: string
   group: GroupType
   isAS1Team: boolean
@@ -33,7 +34,7 @@ export interface Player {
   birthDate: string
   height?: number
   weight?: number
-  nationality: string
+  nationality?: string
   dominantFoot?: "left" | "right" | "both"
   stats?: PlayerStats
 }

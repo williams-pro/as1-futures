@@ -62,11 +62,11 @@ export function PlayerListItem({ player }: PlayerListItemProps) {
         }}
       >
         <Card className={cn(
-          "group overflow-hidden transition-all duration-200",
+          "group overflow-hidden transition-all duration-200 h-full",
           "hover:shadow-elevation-3 hover:border-primary"
         )}>
-          <CardContent className="p-0">
-            <div className="flex items-start gap-4 p-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <CardContent className="p-0 h-full">
+            <div className="flex items-start gap-4 p-4 h-full min-h-[160px]">
               {/* Player Avatar */}
               <PlayerCardAvatar
                 photoUrl={player.photoUrl}

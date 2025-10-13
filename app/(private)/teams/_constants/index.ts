@@ -1,7 +1,6 @@
 export const TEAMS_TEXTS = {
   PAGE: {
     TITLE: "Teams",
-    DESCRIPTION: "Browse teams organized by tournament groups",
   },
   TABS: {
     ALL_GROUPS: "All Groups",

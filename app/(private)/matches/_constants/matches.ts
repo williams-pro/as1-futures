@@ -6,10 +6,9 @@ export const MATCHES_TEXTS = {
     NO_MATCHES_DESCRIPTION: "Try adjusting your filters",
   },
   MATCH_CARD: {
-    STATUS: {
-      SCHEDULED: "Scheduled",
-      LIVE: "Live",
-      FINISHED: "Finished",
+    GROUPS: {
+      A: "Group A",
+      B: "Group B",
     },
     TEAM_LABELS: {
       HOME: "Home",
