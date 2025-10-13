@@ -39,9 +39,7 @@ export default function RootLayout({
           <AuthProvider>
             <FavoritesProvider>
               <CustomSidebarProvider>
-                <ShadcnSidebarProvider>
-                  {children}
-                </ShadcnSidebarProvider>
+                {children}
               </CustomSidebarProvider>
             </FavoritesProvider>
           </AuthProvider>
