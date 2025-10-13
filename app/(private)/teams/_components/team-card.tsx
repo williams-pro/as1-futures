@@ -1,14 +1,57 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Shield, Users, ArrowRight, Star } from "lucide-react"
+import { Shield, Users, Star, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Team } from "@/lib/types"
 import { TEAM_CARD_TEXTS } from "../_constants"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 interface TeamCardProps {
   team: Team & { playerCount: number }
+}
+
+// Componente para el botón con loading state
+function TeamCardButton({ team, className }: { team: Team & { playerCount: number }; className?: string }) {
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const handleClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    
+    // Simular un pequeño delay para mostrar el loading
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    router.push(`/teams/${team.id}`)
+  }
+
+  return (
+    <Button 
+      onClick={handleClick}
+      className={cn(
+        "w-full h-10 bg-gradient-to-r from-as1-charcoal to-as1-charcoal/90",
+        "hover:from-as1-charcoal/90 hover:to-as1-charcoal text-white text-sm font-medium",
+        "rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group/btn",
+        "disabled:opacity-70 disabled:cursor-not-allowed",
+        className
+      )}
+      disabled={isLoading}
+    >
+      {isLoading ? (
+        <>
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          {TEAM_CARD_TEXTS.UI.LOADING}
+        </>
+      ) : (
+        <span>{TEAM_CARD_TEXTS.UI.VIEW_PLAYERS}</span>
+      )}
+    </Button>
+  )
 }
 
 export function TeamCard({ team }: TeamCardProps) {
@@ -77,17 +120,7 @@ export function TeamCard({ team }: TeamCardProps) {
 
         {/* Action Button */}
         <div className="mt-auto pt-2">
-          <Link href={`/teams/${team.id}`} className="block">
-            <Button 
-              className={cn(
-                "w-full h-10 bg-gradient-to-r from-as1-charcoal to-as1-charcoal/90",
-                "hover:from-as1-charcoal/90 hover:to-as1-charcoal text-white text-sm font-medium",
-                "rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group/btn"
-              )}
-            >
-              <span>{TEAM_CARD_TEXTS.UI.VIEW_PLAYERS}</span>
-            </Button>
-          </Link>
+          <TeamCardButton team={team} />
         </div>
       </CardContent>
     </Card>
@@ -263,18 +296,7 @@ export function TeamCardPremium({ team }: TeamCardProps) {
         </div>
 
         <div className="mt-auto pt-2">
-          <Link href={`/teams/${team.id}`} className="block">
-            <Button 
-              className={cn(
-                "w-full h-10 bg-gradient-to-r from-as1-charcoal to-as1-charcoal/90",
-                "hover:from-as1-charcoal/90 hover:to-as1-charcoal text-white text-sm font-medium",
-                "rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group/btn"
-              )}
-            >
-              <span>{TEAM_CARD_TEXTS.UI.VIEW_PLAYERS}</span>
-              <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover/btn:translate-x-0.5 transition-transform duration-200" />
-            </Button>
-          </Link>
+          <TeamCardButton team={team} />
         </div>
       </CardContent>
     </Card>

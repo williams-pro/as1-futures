@@ -5,6 +5,7 @@ export const TEAM_CARD_TEXTS = {
     VIEW_PLAYERS: "View Players",
     VIEW_TEAM: "View Team",
     AS1_LABEL: "AS1",
+    LOADING: "Loading...",
   },
   ALT_TEXTS: {
     TEAM_LOGO: (teamName: string) => `${teamName} logo`,
