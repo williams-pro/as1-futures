@@ -43,8 +43,7 @@ export function usePinAuth(): UsePinAuthReturn {
     try {
       logger.auth('SIGN_IN_PIN_CLIENT', 'Starting PIN sign in process', undefined)
       
-      // Check rate limiting
-      const clientId = credentials.email // Usar email como identificador
+      const clientId = credentials.email
       if (isRateLimited(clientId)) {
         const blockTime = getBlockTimeRemaining(clientId)
         const minutes = Math.ceil(blockTime / (1000 * 60))
@@ -53,7 +52,6 @@ export function usePinAuth(): UsePinAuthReturn {
         return
       }
       
-      // Validate credentials format
       const validationError = validateCredentials(credentials.email, credentials.pin)
       if (validationError) {
         setError(validationError)
@@ -62,21 +60,15 @@ export function usePinAuth(): UsePinAuthReturn {
         return
       }
 
-      // Encode PIN for Supabase Auth (4 digits -> 6 characters)
       const internalPin = encodePin(credentials.pin)
-      
-      // Attempt authentication with Supabase Auth first
-      // This prevents timing attacks by not revealing user existence
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: credentials.email,
-        password: internalPin, // Use encoded PIN as password
+        password: internalPin,
       })
 
-      // If authentication fails, always return generic error
       if (authError) {
         logger.authError('SIGN_IN_PIN_CLIENT', 'Authentication failed', undefined, authError)
         recordLoginAttempt(clientId, false)
-        // Apply random delay to prevent timing attacks
         await randomDelay(100, 300)
         setError(AUTH_MESSAGES.INVALID_CREDENTIALS)
         return
@@ -85,13 +77,11 @@ export function usePinAuth(): UsePinAuthReturn {
       if (!authData.session) {
         logger.authError('SIGN_IN_PIN_CLIENT', 'No session created', undefined)
         recordLoginAttempt(clientId, false)
-        // Apply random delay to prevent timing attacks
         await randomDelay(100, 300)
         setError(AUTH_MESSAGES.INVALID_CREDENTIALS)
         return
       }
 
-      // Only after successful authentication, verify user in scouts table
       const { data: scout, error: scoutError } = await supabase
         .from('scouts')
         .select('id, email, role, is_active')
@@ -100,9 +90,7 @@ export function usePinAuth(): UsePinAuthReturn {
 
       if (scoutError || !scout) {
         logger.authError('SIGN_IN_PIN_CLIENT', 'User not found in scouts table after auth', authData.user?.id, scoutError)
-        // Sign out the user since they shouldn't have access
         await supabase.auth.signOut()
-        // Apply random delay to prevent timing attacks
         await randomDelay(100, 300)
         setError(AUTH_MESSAGES.INVALID_CREDENTIALS)
         return
@@ -110,9 +98,7 @@ export function usePinAuth(): UsePinAuthReturn {
 
       if (!scout.is_active) {
         logger.authError('SIGN_IN_PIN_CLIENT', 'User account is inactive', scout.id)
-        // Sign out the user since they shouldn't have access
         await supabase.auth.signOut()
-        // Apply random delay to prevent timing attacks
         await randomDelay(100, 300)
         setError(AUTH_MESSAGES.INVALID_CREDENTIALS)
         return
@@ -120,17 +106,9 @@ export function usePinAuth(): UsePinAuthReturn {
 
       logger.auth('SIGN_IN_PIN_CLIENT', 'User verified in scouts table', scout.id)
 
-      // Login exitoso - limpiar rate limiting
       recordLoginAttempt(clientId, true)
       logger.auth('SIGN_IN_PIN_CLIENT', 'Sign in successful', scout.id)
-      console.log('🎉 PIN login successful, session created:', authData.session.access_token?.substring(0, 20) + '...')
       setIsSuccess(true)
-      
-      // Force a page reload to trigger auth state change
-      // This ensures useSupabaseAuth picks up the new session
-      setTimeout(() => {
-        window.location.href = '/teams'
-      }, 1000)
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : AUTH_MESSAGES.GENERIC_ERROR
@@ -149,7 +127,6 @@ export function usePinAuth(): UsePinAuthReturn {
     try {
       logger.auth('UPDATE_PIN_CLIENT', 'Starting PIN update process', undefined)
       
-      // Validate PINs
       if (!PIN_REGEX.test(pinData.currentPin)) {
         setError('PIN actual debe ser 4 dígitos')
         return
@@ -160,7 +137,6 @@ export function usePinAuth(): UsePinAuthReturn {
         return
       }
 
-      // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       
       if (userError || !user) {
@@ -169,10 +145,7 @@ export function usePinAuth(): UsePinAuthReturn {
         return
       }
 
-      // Encode current PIN for verification
       const encodedCurrentPin = encodePin(pinData.currentPin)
-      
-      // Verify current PIN
       const { error: verifyError } = await supabase.auth.signInWithPassword({
         email: user.email!,
         password: encodedCurrentPin,
@@ -184,10 +157,7 @@ export function usePinAuth(): UsePinAuthReturn {
         return
       }
 
-      // Encode new PIN for storage
       const encodedNewPin = encodePin(pinData.newPin)
-      
-      // Update PIN
       const { error: updateError } = await supabase.auth.updateUser({
         password: encodedNewPin,
       })
@@ -223,7 +193,6 @@ export function usePinAuth(): UsePinAuthReturn {
         return
       }
 
-      // Send reset email
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-pin`,
       })
