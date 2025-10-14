@@ -8,13 +8,16 @@ export const LOGIN_TEXTS = {
     TAGLINE: 'Elite Sports Scouting.',
   },
   FORM: {
-    TITLE: 'Enter your email',
-    DESCRIPTION: "We'll send you a magic link for secure access",
-    EMAIL_LABEL: 'Email address',
-    EMAIL_PLACEHOLDER: 'scout@as1futures.com',
-    TRY_EMAIL: 'Try:',
-    SUBMIT_BUTTON: 'Send Magic Link',
-    SUBMITTING_BUTTON: 'Signing in...',
+    TITLE: 'Welcome Back',
+    DESCRIPTION: 'Enter your email and 4-digit PIN to sign in',
+    EMAIL_LABEL: 'Email Address',
+    EMAIL_PLACEHOLDER: 'usuario@as1futures.com',
+  },
+  PIN_INPUT: {
+    LABEL: '4-Digit PIN',
+    PLACEHOLDER: '0000',
+    DESCRIPTION: 'Enter the 4-digit PIN provided by your administrator',
+    ARIA_LABEL: '4-digit PIN',
   },
 } as const
 

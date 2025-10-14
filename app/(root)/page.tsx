@@ -1,5 +1,4 @@
-import { LoginForm } from './_components/login-form'
-import { BackgroundElements } from './_components/background-elements'
+import { LoginForm, BackgroundElements } from './_components'
 
 export default function RootPage() {
   return (
