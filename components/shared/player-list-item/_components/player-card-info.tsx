@@ -6,7 +6,6 @@ interface PlayerCardInfoProps {
   lastName: string
   jerseyNumber: number
   position: string
-  teamName?: string
   className?: string
   children?: ReactNode
 }
@@ -16,7 +15,6 @@ export function PlayerCardInfo({
   lastName,
   jerseyNumber,
   position,
-  teamName = "Team",
   className,
   children
 }: PlayerCardInfoProps) {
@@ -51,13 +49,6 @@ export function PlayerCardInfo({
         <div className="flex items-center gap-2">
           <span className={cn("text-sm text-muted-foreground")}>
             {position}
-          </span>
-        </div>
-        
-        {/* Team Name */}
-        <div className="flex items-center gap-2">
-          <span className={cn("text-xs text-muted-foreground")}>
-            {teamName}
           </span>
         </div>
       </div>

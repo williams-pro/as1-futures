@@ -27,15 +27,14 @@ export function useFavoritesManager() {
       })
   }, [localFavorites])
 
-  // Get players for regular favorites (non-exclusive)
+  // Get players for regular favorites (all favorites, including exclusives)
   const regularFavoritePlayers = useMemo(() => {
-    const regularFavs = localFavorites.filter((f) => !f.isExclusive)
-    return regularFavs
+    return localFavorites
       .map((fav) => getPlayerById(fav.playerId))
       .filter((p): p is Player => p !== undefined)
       .sort((a, b) => {
-        const orderA = regularFavs.find((f) => f.playerId === a.id)?.order ?? 0
-        const orderB = regularFavs.find((f) => f.playerId === b.id)?.order ?? 0
+        const orderA = localFavorites.find((f) => f.playerId === a.id)?.order ?? 0
+        const orderB = localFavorites.find((f) => f.playerId === b.id)?.order ?? 0
         return orderA - orderB
       })
   }, [localFavorites])
@@ -55,13 +54,10 @@ export function useFavoritesManager() {
   }
 
   const handleReorderRegular = (newOrder: Player[]) => {
-    const exclusiveCount = localFavorites.filter((f) => f.isExclusive).length
     const updatedFavorites = localFavorites.map((fav) => {
-      if (!fav.isExclusive) {
-        const newIndex = newOrder.findIndex((p) => p.id === fav.playerId)
-        if (newIndex !== -1) {
-          return { ...fav, order: newIndex + exclusiveCount }
-        }
+      const newIndex = newOrder.findIndex((p) => p.id === fav.playerId)
+      if (newIndex !== -1) {
+        return { ...fav, order: newIndex }
       }
       return fav
     })

@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useSidebar } from "@/components/ui/sidebar"
 import type { NavigationItem } from "../_types"
 
 interface SidebarNavItemProps {
@@ -11,10 +14,19 @@ interface SidebarNavItemProps {
 
 export function SidebarNavItem({ item, isActive, isCollapsed, badge }: SidebarNavItemProps) {
   const Icon = item.icon
+  const { setOpenMobile, isMobile } = useSidebar()
+
+  const handleClick = () => {
+    // Cerrar sidebar móvil al hacer clic en un enlace
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
 
   return (
     <Link
       href={item.href}
+      onClick={handleClick}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 group relative",
         isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground",

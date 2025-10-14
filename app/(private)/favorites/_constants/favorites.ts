@@ -10,7 +10,7 @@ export const FAVORITES_TEXTS = {
       EMPTY_MESSAGE: "No exclusive players yet. Mark up to 3 players as exclusive from any player details page.",
     },
     FAVORITE_PLAYERS: {
-      TITLE: "Favorite Players", 
+      TITLE: "All Favorites", 
       ICON: "star",
       EMPTY_MESSAGE: "No favorite players yet. Start adding players from the Teams or Players pages.",
     },
