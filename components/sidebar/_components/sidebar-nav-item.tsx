@@ -9,7 +9,7 @@ interface SidebarNavItemProps {
   item: NavigationItem
   isActive: boolean
   isCollapsed: boolean
-  badge?: number
+  badge?: number | React.ReactNode
 }
 
 export function SidebarNavItem({ item, isActive, isCollapsed, badge }: SidebarNavItemProps) {
@@ -38,14 +38,14 @@ export function SidebarNavItem({ item, isActive, isCollapsed, badge }: SidebarNa
       {!isCollapsed && (
         <>
           <span className="flex-1">{item.name}</span>
-          {badge !== undefined && badge > 0 && (
+          {badge !== undefined && (
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">
               {badge}
             </span>
           )}
         </>
       )}
-      {isCollapsed && badge !== undefined && badge > 0 && (
+      {isCollapsed && badge !== undefined && (
         <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
           {badge}
         </span>

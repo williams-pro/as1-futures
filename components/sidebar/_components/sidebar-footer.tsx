@@ -1,12 +1,13 @@
 import { SidebarUserInfo } from "./sidebar-user"
-import type { User } from "@/lib/types"
+import type { User } from '@supabase/supabase-js'
 
 interface SidebarFooterProps {
-  user: User
+  user: User | null
   userInitials: string
   isCollapsed: boolean
-  favoritesCount: number
-  exclusivesCount: number
+  favoritesCount?: number
+  exclusivesCount?: number
+  favoritesLoading?: boolean
 }
 
 export function SidebarFooter({ 
@@ -14,7 +15,8 @@ export function SidebarFooter({
   userInitials, 
   isCollapsed, 
   favoritesCount, 
-  exclusivesCount 
+  exclusivesCount,
+  favoritesLoading = false
 }: SidebarFooterProps) {
   return (
     <div className="p-3">
@@ -24,6 +26,7 @@ export function SidebarFooter({
         isCollapsed={isCollapsed}
         favoritesCount={favoritesCount}
         exclusivesCount={exclusivesCount}
+        favoritesLoading={favoritesLoading}
       />
     </div>
   )

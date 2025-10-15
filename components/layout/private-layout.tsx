@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth } from "@/contexts/auth-context"
+import { useSupabaseAuth } from "@/hooks/use-supabase-auth"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { AppSidebar } from "@/components/sidebar"
@@ -14,7 +14,7 @@ interface PrivateLayoutWrapperProps {
 }
 
 export function PrivateLayoutWrapper({ children }: PrivateLayoutWrapperProps) {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading } = useSupabaseAuth()
   const router = useRouter()
   const { state, toggleSidebar } = useSidebar()
 

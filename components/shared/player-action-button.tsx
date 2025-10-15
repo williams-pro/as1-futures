@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { Button } from "@/components/ui/button"
+import { LoadingButton } from "@/components/ui/loading-button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Star, Gem } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -10,6 +10,7 @@ interface PlayerActionButtonProps {
   type: "favorite" | "exclusive"
   isActive: boolean
   isDisabled?: boolean
+  isLoading?: boolean
   onClick: (e: React.MouseEvent) => void
   tooltipContent: React.ReactNode
   className?: string
@@ -20,6 +21,7 @@ export function PlayerActionButton({
   type,
   isActive,
   isDisabled = false,
+  isLoading = false,
   onClick,
   tooltipContent,
   className,
@@ -30,11 +32,12 @@ export function PlayerActionButton({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button
+        <LoadingButton
           variant="ghost"
           size="icon"
+          isLoading={isLoading}
           onClick={(e) => {
-            if (isDisabled) {
+            if (isDisabled || isLoading) {
               e.preventDefault()
               e.stopPropagation()
               return
@@ -70,7 +73,7 @@ export function PlayerActionButton({
               color={isActive ? "currentColor" : "#6b7280"}
             />
           )}
-        </Button>
+        </LoadingButton>
       </TooltipTrigger>
       <TooltipContent className="z-[9999]">{tooltipContent}</TooltipContent>
     </Tooltip>

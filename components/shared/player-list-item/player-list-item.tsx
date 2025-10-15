@@ -24,6 +24,7 @@ export function PlayerListItem({ player }: PlayerListItemProps) {
     playerIsFavorite,
     playerIsExclusive,
     canMarkExclusive,
+    isLoading,
     handleFavoriteClick,
     handleExclusiveClick,
     showRemoveExclusiveDialog,
@@ -82,12 +83,13 @@ export function PlayerListItem({ player }: PlayerListItemProps) {
                 position={player.position}
               >
                 {/* Action Buttons */}
-                {user?.role === "scout" && (
+                {user && (
                   <PlayerCardActionButtons
                     playerId={player.id}
                     playerIsFavorite={playerIsFavorite}
                     playerIsExclusive={playerIsExclusive}
                     canMarkExclusive={canMarkExclusive}
+                    isLoading={isLoading}
                     onFavoriteClick={handleFavoriteClick}
                     onExclusiveClick={handleExclusiveClick}
                     favoriteTooltip={favoriteTooltip}

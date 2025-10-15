@@ -1,8 +1,28 @@
 "use client"
 
-import type { Player } from "@/lib/types"
 import { PlayerListItem } from "@/components/shared/player-list-item"
 import { Users } from "lucide-react"
+
+interface Player {
+  id: string
+  first_name: string
+  last_name: string
+  jersey_number: number
+  position: string
+  team: {
+    id: string
+    name: string
+    team_code: string
+    group: string
+  }
+  tournament_group: {
+    name: string
+  }
+  photo_url?: string
+  video_url?: string
+  is_favorite?: boolean
+  is_exclusive?: boolean
+}
 
 interface PlayerGridProps {
   players: Player[]
@@ -21,9 +41,38 @@ export function PlayerGrid({ players }: PlayerGridProps) {
     )
   }
 
+  // Convert Supabase data to the format expected by PlayerListItem
+  const adaptedPlayers = players.map((player) => ({
+    id: player.id,
+    firstName: player.first_name,
+    lastName: player.last_name,
+    jerseyNumber: player.jersey_number,
+    position: player.position,
+    teamId: player.team.id,
+    teamName: player.team.name,
+    teamCode: player.team.team_code,
+    group: player.tournament_group.name,
+    photoUrl: player.photo_url,
+    videoUrl: player.video_url,
+    isFavorite: player.is_favorite || false,
+    isExclusive: player.is_exclusive || false,
+    // Add default values for required fields
+    birthDate: new Date().toISOString().split('T')[0], // Default to today
+    height: 175, // Default height
+    dominantFoot: 'Right' as const,
+    nationality: 'Unknown',
+    stats: {
+      goals: 0,
+      assists: 0,
+      yellowCards: 0,
+      redCards: 0,
+      minutesPlayed: 0,
+    }
+  }))
+
   return (
     <div className="space-y-2">
-      {players.map((player) => (
+      {adaptedPlayers.map((player) => (
         <PlayerListItem key={player.id} player={player} />
       ))}
     </div>

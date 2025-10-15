@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ArrowLeft, Star, Gem, Shield } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ArrowLeft, Star, Gem, Shield, Loader2, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { PlayerInfoCard } from "./_components/player-info"
@@ -27,9 +29,12 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
     player,
     team,
     user,
+    loading,
+    error,
     playerIsFavorite,
     playerIsExclusive,
     canMarkExclusive,
+    isLoading,
     handleFavoriteClick,
     handleExclusiveClick,
     showRemoveFavoriteDialog,
@@ -39,6 +44,78 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
     confirmRemoveFavorite,
     confirmRemoveExclusive,
   } = usePlayerDetail(playerId)
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        {/* Header Navigation Skeleton */}
+        <div>
+          <Skeleton className="h-10 w-48" />
+        </div>
+
+        {/* Player Header Skeleton */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Player Avatar Skeleton */}
+          <div className="flex-shrink-0">
+            <Skeleton className="h-40 w-40 rounded-2xl" />
+          </div>
+
+          {/* Player Info Skeleton */}
+          <div className="flex-1 space-y-6">
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-6 w-20" />
+              </div>
+              <Skeleton className="h-12 w-64" />
+            </div>
+
+            {/* Team Info Skeleton */}
+            <Skeleton className="h-16 w-48" />
+
+            {/* Action Buttons Skeleton */}
+            <div className="flex gap-3 pt-4">
+              <Skeleton className="h-11 w-32" />
+              <Skeleton className="h-11 w-32" />
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
+
+        {/* Content Grid Skeleton */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        {/* Header Navigation */}
+        <div>
+          <Link href="/teams">
+            <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="h-4 w-4" />
+              {PLAYER_DETAIL_TEXTS.UI.BACK_TO_TEAMS}
+            </Button>
+          </Link>
+        </div>
+
+        {/* Error State */}
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load player details: {error}
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
 
   if (!player) {
     notFound()
@@ -140,25 +217,37 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
               )}
 
               {/* Action Buttons with Tooltips */}
-              {user?.role === "scout" && (
-                <div className="flex flex-wrap gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-4">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        onClick={handleFavoriteClick}
+                        onClick={(e) => {
+                          if (isLoading || (playerIsExclusive && playerIsFavorite)) {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            return
+                          }
+                          handleFavoriteClick(e)
+                        }}
                         className={cn(
-                          "gap-2 h-11 px-6 rounded-xl transition-all duration-300",
+                          "gap-2 h-11 px-6 rounded-xl transition-all duration-300 flex items-center relative",
                           playerIsFavorite
                             ? "bg-amber-100 hover:bg-amber-200 text-amber-700 hover:text-amber-800 border border-amber-200 hover:border-amber-300"
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200",
-                          playerIsExclusive && playerIsFavorite && "opacity-60 cursor-not-allowed",
+                          (isLoading || (playerIsExclusive && playerIsFavorite)) && "opacity-60 cursor-not-allowed",
                         )}
                       >
-                        <Star className={cn("h-4 w-4", playerIsFavorite && "fill-current")} />
-                        {playerIsFavorite ? PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.ADD}
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            {playerIsFavorite ? PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.ADD}
+                            <Star className={cn("h-4 w-4", playerIsFavorite && "fill-current")} />
+                          </>
+                        )}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="z-[9999]">
                       <p className="text-xs max-w-[200px]">
                         {playerIsExclusive && playerIsFavorite
                           ? PLAYER_DETAIL_TEXTS.TOOLTIPS.FAVORITE.CANNOT_REMOVE
@@ -172,24 +261,37 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        onClick={handleExclusiveClick}
+                        onClick={(e) => {
+                          if (isLoading || (!canMarkExclusive && !playerIsExclusive)) {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            return
+                          }
+                          handleExclusiveClick(e)
+                        }}
                         className={cn(
-                          "gap-2 h-11 px-6 rounded-xl transition-all duration-300",
+                          "gap-2 h-11 px-6 rounded-xl transition-all duration-300 relative",
                           playerIsExclusive
                             ? "bg-as1-purple-100 hover:bg-as1-purple-200 text-as1-purple-700 hover:text-as1-purple-800 border border-as1-purple-200 hover:border-as1-purple-300"
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200",
-                          !canMarkExclusive && !playerIsExclusive && "opacity-60 cursor-not-allowed",
+                          (isLoading || (!canMarkExclusive && !playerIsExclusive)) && "opacity-60 cursor-not-allowed",
                         )}
                       >
-                        <Gem 
-                          className="h-4 w-4" 
-                          strokeWidth={2.5}
-                          color={playerIsExclusive ? "currentColor" : "#6b7280"}
-                        />
-                        {playerIsExclusive ? PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.ADD}
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            {playerIsExclusive ? PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.ADD}
+                            <Gem 
+                              className="h-4 w-4" 
+                              strokeWidth={2.5}
+                              color={playerIsExclusive ? "currentColor" : "#6b7280"}
+                            />
+                          </>
+                        )}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="z-[9999]">
                       <p className="text-xs max-w-[200px]">
                         {!canMarkExclusive && !playerIsExclusive
                           ? PLAYER_DETAIL_TEXTS.TOOLTIPS.EXCLUSIVE.LIMIT_REACHED
@@ -200,7 +302,6 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-              )}
             </div>
           </div>
 
@@ -210,7 +311,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
           {/* Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             <PlayerInfoCard player={player} team={team || undefined} />
-            <PlayerHighlights videoUrls={player.videoUrl ? [player.videoUrl] : []} />
+            <PlayerHighlights videoUrls={[]} />
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, forwardRef } from "react"
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,13 +10,15 @@ import { cn } from "@/lib/utils"
 import { LOGIN_TEXTS } from "../_constants"
 
 interface LoginPinInputProps {
-  pin: string
-  onPinChange: (pin: string) => void
+  error?: string
   isPending: boolean
-  hasError: boolean
 }
 
-export function LoginPinInput({ pin, onPinChange, isPending, hasError }: LoginPinInputProps) {
+export const LoginPinInput = forwardRef<HTMLInputElement, LoginPinInputProps>(({ 
+  error, 
+  isPending, 
+  ...props 
+}, ref) => {
   const [isPinVisible, setIsPinVisible] = useState(false)
 
   const togglePinVisibility = () => {
@@ -27,7 +29,8 @@ export function LoginPinInput({ pin, onPinChange, isPending, hasError }: LoginPi
     const value = e.target.value
 
     if (/^\d*$/.test(value) && value.length <= 4) {
-      onPinChange(value)
+      // React Hook Form manejará el valor
+      e.target.value = value
     }
   }
 
@@ -53,7 +56,11 @@ export function LoginPinInput({ pin, onPinChange, isPending, hasError }: LoginPi
     e.preventDefault()
     const pastedData = e.clipboardData.getData("text")
     const numericOnly = pastedData.replace(/\D/g, "").slice(0, 4)
-    onPinChange(numericOnly)
+    // React Hook Form manejará el valor
+    if (ref && 'current' in ref && ref.current) {
+      ref.current.value = numericOnly
+      ref.current.dispatchEvent(new Event('input', { bubbles: true }))
+    }
   }
 
   return (
@@ -69,27 +76,28 @@ export function LoginPinInput({ pin, onPinChange, isPending, hasError }: LoginPi
           )}
         />
         <Input
+          ref={ref}
           id="pin"
           type={isPinVisible ? "text" : "password"}
           inputMode="numeric"
           pattern="[0-9]*"
-          value={pin}
           onChange={handlePinChange}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={LOGIN_TEXTS.PIN_INPUT.PLACEHOLDER}
           disabled={isPending}
           aria-label={LOGIN_TEXTS.PIN_INPUT.ARIA_LABEL}
-          aria-invalid={hasError}
+          aria-invalid={!!error}
           aria-describedby="pin-description"
           className={cn(
             "pl-10 pr-12 h-12 text-center text-lg font-mono tracking-widest",
             "border-gray-300 focus:border-as1-gold focus:ring-as1-gold",
-            hasError && "border-red-500 focus:border-red-500 focus:ring-red-500",
+            error && "border-red-500 focus:border-red-500 focus:ring-red-500",
             isPending && "bg-gray-50 cursor-not-allowed",
           )}
           maxLength={4}
           autoComplete="off"
+          {...props}
         />
         <button
           type="button"
@@ -116,4 +124,6 @@ export function LoginPinInput({ pin, onPinChange, isPending, hasError }: LoginPi
       </p>
     </div>
   )
-}
+})
+
+LoginPinInput.displayName = "LoginPinInput"

@@ -2,10 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { AuthProvider } from "@/contexts/auth-context"
-import { FavoritesProvider } from "@/contexts/favorites-context"
 import { SidebarProvider as CustomSidebarProvider } from "@/contexts/sidebar-context"
 import { SidebarProvider as ShadcnSidebarProvider } from "@/components/ui/sidebar"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 import { Suspense } from "react"
 
@@ -36,14 +35,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased">
         <Suspense fallback={<div>Loading...</div>}>
-          <AuthProvider>
-            <FavoritesProvider>
-              <CustomSidebarProvider>
-                {children}
-              </CustomSidebarProvider>
-            </FavoritesProvider>
-          </AuthProvider>
+          <CustomSidebarProvider>
+            {children}
+          </CustomSidebarProvider>
         </Suspense>
+        <Toaster />
         <Analytics />
       </body>
     </html>

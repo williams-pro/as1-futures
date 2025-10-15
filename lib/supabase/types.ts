@@ -113,3 +113,4 @@ export interface LogEntry {
   timestamp: string
   stack?: string
 }
+

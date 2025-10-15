@@ -2,19 +2,21 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { SkeletonCounter } from "@/components/ui/skeleton-counter"
 import { cn } from "@/lib/utils"
-import type { User } from "@/lib/types"
 import { Star, Gem, LogOut } from "lucide-react"
 import { useState } from "react"
 import { ConfirmDialog } from "@/app/(private)/favorites/_components/confirm-dialog"
-import { useAuth } from "@/contexts/auth-context"
+import { useSupabaseAuth } from "@/hooks/use-supabase-auth"
+import type { User } from '@supabase/supabase-js'
 
 interface SidebarUserInfoProps {
-  user: User
+  user: User | null
   userInitials: string
   isCollapsed: boolean
   favoritesCount?: number
   exclusivesCount?: number
+  favoritesLoading?: boolean
 }
 
 export function SidebarUserInfo({
@@ -23,12 +25,13 @@ export function SidebarUserInfo({
   isCollapsed,
   favoritesCount = 0,
   exclusivesCount = 0,
+  favoritesLoading = false,
 }: SidebarUserInfoProps) {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-  const { logout } = useAuth()
+  const { logout } = useSupabaseAuth()
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
   }
 
   return (
@@ -48,28 +51,38 @@ export function SidebarUserInfo({
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-semibold text-foreground">{user.name}</p>
-              <p className="truncate text-xs text-muted-foreground capitalize">{user.role}</p>
+              <p className="truncate text-sm font-semibold text-foreground">
+                {user?.email?.split('@')[0] || 'Usuario'}
+              </p>
+              <p className="truncate text-xs text-muted-foreground capitalize">scout</p>
             </div>
           )}
         </div>
 
         {/* Stats for Scouts */}
-        {!isCollapsed && user.role === "scout" && (
+        {!isCollapsed && user && (
           <div className="rounded-lg border border-border/40 bg-white p-3 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <Star className="h-3 w-3 text-amber-500" />
                 <span className="font-medium">Favorites</span>
               </div>
-              <span className="font-mono font-semibold text-foreground">{favoritesCount}</span>
+              {favoritesLoading ? (
+                <SkeletonCounter className="h-4 w-6" />
+              ) : (
+                <span className="font-mono font-semibold text-foreground">{favoritesCount}</span>
+              )}
             </div>
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <Gem className="h-3 w-3 text-as1-purple-500" />
                 <span className="font-medium">Exclusives</span>
               </div>
-              <span className="font-mono font-semibold text-as1-purple-600">{exclusivesCount} / 3</span>
+              {favoritesLoading ? (
+                <SkeletonCounter className="h-4 w-8" />
+              ) : (
+                <span className="font-mono font-semibold text-as1-purple-600">{exclusivesCount} / 3</span>
+              )}
             </div>
           </div>
         )}

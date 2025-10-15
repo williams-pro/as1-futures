@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, useTransition } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { signInWithPin } from '@/app/actions/auth/sign-in-with-pin'
-import { 
+import { useLogin } from "@/hooks/use-login"
+import {
   LoginErrorMessage,
   LoginEmailInput,
   LoginPinInput,
@@ -14,37 +13,15 @@ import {
 } from './index'
 
 export function LoginForm() {
-  const [email, setEmail] = useState("")
-  const [pin, setPin] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!email || !pin) return
-    
-    setError(null)
-    
-    startTransition(async () => {
-      try {
-        const formData = new FormData()
-        formData.append('email', email)
-        formData.append('pin', pin)
-        
-        const result = await signInWithPin(formData)
-        // Si llegamos aquí, significa que hubo un error
-        // porque si fue exitoso, redirect() habría terminado la ejecución
-        if (result && !result.success) {
-          setError(result.error || 'Error al iniciar sesión')
-        }
-      } catch (error) {
-        // Manejar errores de redirección o otros errores
-        console.error('Login error:', error)
-        setError('Error al iniciar sesión')
-      }
-    })
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    isSubmitting,
+    error,
+    onSubmit,
+    clearError
+  } = useLogin()
 
   return (
     <Card className={cn(
@@ -57,38 +34,36 @@ export function LoginForm() {
       <CardContent className={cn(
         "space-y-5 md:space-y-6 px-4 sm:px-6 pb-6 sm:pb-8"
       )}>
-        <form onSubmit={handleSubmit} className={cn(
+        <form onSubmit={handleSubmit(onSubmit)} className={cn(
           "space-y-5 md:space-y-6"
         )}>
-                 <LoginEmailInput
-                   email={email}
-                   onEmailChange={setEmail}
-                   isPending={isPending}
-                   hasError={!!error}
-                 />
+          <LoginEmailInput
+            {...register("email")}
+            error={errors.email?.message}
+            isPending={isSubmitting}
+          />
 
-                 <LoginPinInput
-                   pin={pin}
-                   onPinChange={setPin}
-                   isPending={isPending}
-                   hasError={!!error}
-                 />
+          <LoginPinInput
+            {...register("pin")}
+            error={errors.pin?.message}
+            isPending={isSubmitting}
+          />
 
-                 <div className={cn("space-y-2")}>
-                   {error && (
-                     <LoginErrorMessage message={error} />
-                   )}
-                 </div>
+          <div className={cn("space-y-2")}>
+            {error && (
+              <LoginErrorMessage message={error} />
+            )}
+          </div>
 
-                 <LoginFormFooter />
+          <LoginFormFooter />
 
-                 <div className={cn("pt-2")}>
-                   <LoginSubmitButton
-                     isPending={isPending}
-                     isSuccess={false}
-                     disabled={!email || !pin || pin.length !== 4}
-                   />
-                 </div>
+          <div className={cn("pt-2")}>
+            <LoginSubmitButton
+              isPending={isSubmitting}
+              isSuccess={false}
+              disabled={!isValid || isSubmitting}
+            />
+          </div>
         </form>
       </CardContent>
     </Card>

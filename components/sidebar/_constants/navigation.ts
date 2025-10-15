@@ -1,4 +1,4 @@
-import { Users, Star, Video, Settings, Shield } from "lucide-react"
+import { Users, Star, Video, Settings, Shield, Home } from "lucide-react"
 import type { NavigationItem } from "../_types"
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
@@ -14,7 +14,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     href: "/players",
     icon: Users,
     roles: ["scout", "admin"],
-    visible: false, // Hidden for now, may be enabled in future
+    visible: false,
   },
   {
     name: "Matches",
@@ -27,7 +27,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     name: "My Favorites",
     href: "/favorites",
     icon: Star,
-    roles: ["scout"],
+    roles: ["scout", "admin"],
     visible: true,
   },
   {

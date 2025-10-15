@@ -3,11 +3,50 @@
 import { MatchCard } from "./_components/match-card"
 import { MatchesFilter } from "./_components/matches-filter"
 import { useMatchesFilter } from "./_hooks/use-matches-filter"
-import { Video } from "lucide-react"
+import { Video, Loader2, AlertCircle } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MATCHES_TEXTS } from "./_constants/matches"
 
 export default function MatchesPage() {
-  const { selectedGroup, setSelectedGroup, filteredMatches } = useMatchesFilter()
+  const { selectedGroup, setSelectedGroup, filteredMatches, loading, error } = useMatchesFilter()
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground text-balance">{MATCHES_TEXTS.UI.PAGE_TITLE}</h1>
+          <p className="mt-2 text-muted-foreground">{MATCHES_TEXTS.UI.PAGE_DESCRIPTION}</p>
+        </div>
+
+        <Skeleton className="h-16 w-full" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-48 w-full" />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground text-balance">{MATCHES_TEXTS.UI.PAGE_TITLE}</h1>
+          <p className="mt-2 text-muted-foreground">{MATCHES_TEXTS.UI.PAGE_DESCRIPTION}</p>
+        </div>
+
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load matches: {error}
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

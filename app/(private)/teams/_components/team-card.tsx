@@ -6,17 +6,17 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Shield, Users, Star, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Team } from "@/lib/types"
+import type { TeamCardData } from "../_hooks/use-teams-data"
 import { TEAM_CARD_TEXTS } from "../_constants"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 interface TeamCardProps {
-  team: Team & { playerCount: number }
+  team: TeamCardData
 }
 
 // Componente para el botón con loading state
-function TeamCardButton({ team, className }: { team: Team & { playerCount: number }; className?: string }) {
+function TeamCardButton({ team, className }: { team: TeamCardData; className?: string }) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 

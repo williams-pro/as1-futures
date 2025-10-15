@@ -1,12 +1,13 @@
 "use client"
 
-import { useAuth } from "@/contexts/auth-context"
-import { useFavorites } from "@/contexts/favorites-context"
+import { useSupabaseAuth } from "@/hooks/use-supabase-auth"
+import { useFavoritesStats } from "@/hooks/use-favorites-stats"
 import { useSidebar } from "./_hooks/use-sidebar"
 import { useSidebar as useShadcnSidebar } from "@/components/ui/sidebar"
 import { SidebarLogoHeader } from "./_components/sidebar-logo-header"
 import { SidebarNavigation } from "./_components/sidebar-navigation"
 import { SidebarFooter } from "./_components/sidebar-footer"
+import { SkeletonCounter } from "@/components/ui/skeleton-counter"
 import {
   Sidebar,
   SidebarContent,
@@ -15,8 +16,8 @@ import {
 } from "@/components/ui/sidebar"
 
 export function AppSidebar() {
-  const { user } = useAuth()
-  const { favorites, exclusives } = useFavorites()
+  const { user } = useSupabaseAuth()
+  const { totalFavorites, totalExclusives, isLoading } = useFavoritesStats()
   const { userNavigation, userInitials, isActiveRoute } = useSidebar()
   const { state } = useShadcnSidebar()
 
@@ -39,7 +40,8 @@ export function AppSidebar() {
           navigation={userNavigation}
           isActiveRoute={isActiveRoute}
           isCollapsed={isCollapsed}
-          favoritesCount={favorites.length}
+          favoritesCount={isLoading ? undefined : totalFavorites}
+          favoritesLoading={isLoading}
         />
       </SidebarContent>
 
@@ -48,8 +50,9 @@ export function AppSidebar() {
           user={user}
           userInitials={userInitials}
           isCollapsed={isCollapsed}
-          favoritesCount={favorites.length}
-          exclusivesCount={exclusives.length}
+          favoritesCount={isLoading ? undefined : totalFavorites}
+          exclusivesCount={isLoading ? undefined : totalExclusives}
+          favoritesLoading={isLoading}
         />
       </ShadcnSidebarFooter>
     </Sidebar>

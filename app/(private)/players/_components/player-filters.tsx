@@ -3,7 +3,12 @@
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search } from "lucide-react"
-import { MOCK_TEAMS } from "@/lib/mock-data"
+
+interface Team {
+  id: string
+  name: string
+  team_code: string
+}
 
 interface PlayerFiltersProps {
   searchQuery: string
@@ -13,6 +18,7 @@ interface PlayerFiltersProps {
   selectedPosition: string
   onPositionChange: (value: string) => void
   positions: string[]
+  teams: Team[]
   resultCount: number
 }
 
@@ -24,6 +30,7 @@ export function PlayerFilters({
   selectedPosition,
   onPositionChange,
   positions,
+  teams,
   resultCount,
 }: PlayerFiltersProps) {
   return (
@@ -46,7 +53,7 @@ export function PlayerFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Teams</SelectItem>
-            {MOCK_TEAMS.map((team) => (
+            {teams.map((team) => (
               <SelectItem key={team.id} value={team.id}>
                 {team.name}
               </SelectItem>
