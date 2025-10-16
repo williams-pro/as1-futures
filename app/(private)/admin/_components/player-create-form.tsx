@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -10,18 +10,21 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Loader2, Upload, X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { createPlayer } from '@/app/actions/admin/players/create-player'
 import { uploadPlayerPhoto } from '@/app/actions/admin/upload/upload-player-photo'
 import { Team, PlayerPositionType, DominantFootType } from '@/lib/types/admin.types'
+import { PLAYER_POSITIONS, POSITION_DISPLAY_NAMES } from '@/lib/constants/player-positions'
 import { logger } from '@/lib/logger'
+import { formatDateForInput } from '@/lib/utils/date-utils'
 
 const PlayerCreateSchema = z.object({
   first_name: z.string().min(2, 'First name must be at least 2 characters'),
   last_name: z.string().min(2, 'Last name must be at least 2 characters'),
   jersey_number: z.number().int().min(1).max(99),
-  position: z.enum(['Goalkeeper', 'Defender', 'Midfielder', 'Forward']),
+  position: z.enum(PLAYER_POSITIONS),
   dominant_foot: z.enum(['Left', 'Right', 'Both']),
   height_cm: z.number().int().min(150).max(220),
   date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)'),
@@ -30,12 +33,10 @@ const PlayerCreateSchema = z.object({
 
 type PlayerCreateFormData = z.infer<typeof PlayerCreateSchema>
 
-const POSITIONS: { value: PlayerPositionType; label: string }[] = [
-  { value: 'Goalkeeper', label: 'Goalkeeper' },
-  { value: 'Defender', label: 'Defender' },
-  { value: 'Midfielder', label: 'Midfielder' },
-  { value: 'Forward', label: 'Forward' },
-]
+const POSITIONS: { value: PlayerPositionType; label: string }[] = PLAYER_POSITIONS.map(position => ({
+  value: position,
+  label: POSITION_DISPLAY_NAMES[position]
+}))
 
 const DOMINANT_FEET: { value: DominantFootType; label: string }[] = [
   { value: 'Left', label: 'Left' },
@@ -55,6 +56,21 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const { toast } = useToast()
 
+  // Helper function to ensure date format is YYYY-MM-DD for input
+  const formatDateForInput = (dateString: string) => {
+    try {
+      // If already in YYYY-MM-DD format, return as is
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return dateString
+      }
+      // Otherwise, convert to YYYY-MM-DD format
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0]
+    } catch {
+      return dateString
+    }
+  }
+
   const {
     register,
     handleSubmit,
@@ -67,7 +83,7 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
       first_name: '',
       last_name: '',
       jersey_number: 1,
-      position: 'Midfielder',
+      position: 'MIDFIELDER',
       dominant_foot: 'Right',
       height_cm: 175,
       date_of_birth: '',
@@ -76,6 +92,18 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
   })
 
   const watchedValues = watch()
+
+  // Force the date format to YYYY-MM-DD when component mounts
+  useEffect(() => {
+    // For create form, we don't need to set initial date, but keeping consistency
+    const currentDate = watch('date_of_birth')
+    if (currentDate) {
+      const formattedDate = formatDateForInput(currentDate)
+      if (formattedDate !== currentDate) {
+        setValue('date_of_birth', formattedDate)
+      }
+    }
+  }, [watch, setValue])
 
   const handleFileUpload = async (file: File) => {
     if (!file) return
@@ -309,10 +337,10 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
             {/* Date of Birth */}
             <div className="space-y-2">
               <Label htmlFor="date_of_birth">Date of Birth</Label>
-              <Input
-                id="date_of_birth"
-                type="date"
-                {...register('date_of_birth')}
+              <DatePicker
+                value={watch('date_of_birth')}
+                onChange={(value) => setValue('date_of_birth', value)}
+                placeholder="Select date of birth"
               />
               {errors.date_of_birth && (
                 <Alert variant="destructive">

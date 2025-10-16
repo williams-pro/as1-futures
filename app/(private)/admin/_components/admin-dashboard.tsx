@@ -37,6 +37,7 @@ import { MatchActions } from './match-actions'
 import { ScoutCreateForm } from './scout-create-form'
 import { ScoutEditForm } from './scout-edit-form'
 import { ScoutActions } from './scout-actions'
+import { PlayersSearch } from './players-search'
 import { logger } from '@/lib/logger'
 import { useToast } from '@/hooks/use-toast'
 
@@ -85,6 +86,7 @@ export function AdminDashboard({
   const [tournaments, setTournaments] = useState<Tournament[]>(initialTournaments)
   const [teams, setTeams] = useState<Team[]>(initialTeams)
   const [players, setPlayers] = useState<Player[]>(initialPlayers)
+  const [filteredPlayers, setFilteredPlayers] = useState<Player[]>(initialPlayers)
   const [matches, setMatches] = useState<AdminMatch[]>(initialMatches)
   const [scouts, setScouts] = useState<AdminScout[]>(initialScouts)
   const [loading, setLoading] = useState(false)
@@ -120,7 +122,9 @@ export function AdminDashboard({
       }
 
       if (playersResult.success) {
-        setPlayers(playersResult.data || [])
+        const playersData = playersResult.data || []
+        setPlayers(playersData)
+        setFilteredPlayers(playersData)
       }
 
       if (matchesResult.success) {
@@ -133,7 +137,7 @@ export function AdminDashboard({
 
       logger.database('ADMIN_DASHBOARD', 'Dashboard data fetched successfully')
     } catch (error) {
-      logger.error('ADMIN_DASHBOARD', 'Failed to fetch dashboard data', { operation: 'ADMIN_DASHBOARD' }, error)
+      logger.error('Failed to fetch dashboard data', { operation: 'ADMIN_DASHBOARD' }, error as Error)
       toast({
         title: "Error",
         description: "Failed to load dashboard data",
@@ -176,6 +180,10 @@ export function AdminDashboard({
   const handlePlayerUpdated = () => {
     setEditingPlayer(null)
     fetchData()
+  }
+
+  const handleFilteredPlayers = (filtered: Player[]) => {
+    setFilteredPlayers(filtered)
   }
 
   const handleTeamDeleted = () => {
@@ -462,8 +470,13 @@ export function AdminDashboard({
               onCancel={() => setEditingPlayer(null)}
             />
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {players.map((player) => (
+            <>
+              <PlayersSearch
+                players={players}
+                onFilteredPlayers={handleFilteredPlayers}
+              />
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {filteredPlayers.map((player) => (
                 <Card key={player.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -489,7 +502,7 @@ export function AdminDashboard({
                         {player.dominant_foot} foot • {player.height_cm}cm
                       </div>
                       <div className="text-sm">
-                        Born: {new Date(player.date_of_birth).toLocaleDateString()}
+                        Born: {player.date_of_birth}
                       </div>
                       {player.photo_url && (
                         <div className="mt-4">
@@ -504,7 +517,8 @@ export function AdminDashboard({
                   </CardContent>
                 </Card>
               ))}
-            </div>
+              </div>
+            </>
           )}
         </TabsContent>
 

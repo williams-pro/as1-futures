@@ -10,18 +10,21 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Loader2, Upload, X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { updatePlayer } from '@/app/actions/admin/players/update-player'
 import { uploadPlayerPhoto } from '@/app/actions/admin/upload/upload-player-photo'
 import { Player, Team, PlayerPositionType, DominantFootType } from '@/lib/types/admin.types'
+import { PLAYER_POSITIONS, POSITION_DISPLAY_NAMES } from '@/lib/constants/player-positions'
 import { logger } from '@/lib/logger'
+import { formatDateForInput } from '@/lib/utils/date-utils'
 
 const PlayerEditSchema = z.object({
   first_name: z.string().min(2, 'First name must be at least 2 characters'),
   last_name: z.string().min(2, 'Last name must be at least 2 characters'),
   jersey_number: z.number().int().min(1).max(99),
-  position: z.enum(['Goalkeeper', 'Defender', 'Midfielder', 'Forward']),
+  position: z.enum(PLAYER_POSITIONS),
   dominant_foot: z.enum(['Left', 'Right', 'Both']),
   height_cm: z.number().int().min(150).max(220),
   date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)'),
@@ -29,12 +32,10 @@ const PlayerEditSchema = z.object({
 
 type PlayerEditFormData = z.infer<typeof PlayerEditSchema>
 
-const POSITIONS: { value: PlayerPositionType; label: string }[] = [
-  { value: 'Goalkeeper', label: 'Goalkeeper' },
-  { value: 'Defender', label: 'Defender' },
-  { value: 'Midfielder', label: 'Midfielder' },
-  { value: 'Forward', label: 'Forward' },
-]
+const POSITIONS: { value: PlayerPositionType; label: string }[] = PLAYER_POSITIONS.map(position => ({
+  value: position,
+  label: POSITION_DISPLAY_NAMES[position]
+}))
 
 const DOMINANT_FEET: { value: DominantFootType; label: string }[] = [
   { value: 'Left', label: 'Left' },
@@ -54,6 +55,21 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
   const [photoPreview, setPhotoPreview] = useState<string | null>(player.photo_url || null)
   const { toast } = useToast()
 
+  // Helper function to ensure date format is YYYY-MM-DD for input
+  const formatDateForInput = (dateString: string) => {
+    try {
+      // If already in YYYY-MM-DD format, return as is
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return dateString
+      }
+      // Otherwise, convert to YYYY-MM-DD format
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0]
+    } catch {
+      return dateString
+    }
+  }
+
   const {
     register,
     handleSubmit,
@@ -69,18 +85,26 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
       position: player.position,
       dominant_foot: player.dominant_foot,
       height_cm: player.height_cm,
-      date_of_birth: player.date_of_birth,
+      date_of_birth: formatDateForInput(player.date_of_birth),
     },
   })
 
   const watchedValues = watch()
+
+  // Force the date format to YYYY-MM-DD when component mounts
+  useEffect(() => {
+    if (player.date_of_birth) {
+      const formattedDate = formatDateForInput(player.date_of_birth)
+      setValue('date_of_birth', formattedDate)
+    }
+  }, [player.date_of_birth, setValue])
 
   const handleFileUpload = async (file: File) => {
     if (!file) return
 
     setIsUploading(true)
     try {
-      logger.database('PLAYER_EDIT_FORM', 'Uploading player photo', undefined, { playerId: player.id })
+      logger.database('PLAYER_EDIT_FORM', 'Uploading player photo', player.id)
 
       const formData = new FormData()
       formData.append('file', file)
@@ -98,7 +122,7 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
         throw new Error(result.error || 'Upload failed')
       }
     } catch (error) {
-      logger.error('PLAYER_EDIT_FORM', 'Failed to upload photo', { playerId: player.id }, error)
+      logger.error('Failed to upload photo', { operation: 'PLAYER_EDIT_FORM', metadata: { playerId: player.id } }, error as Error)
       toast({
         title: "Error",
         description: "Failed to upload photo",
@@ -123,7 +147,7 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
   const onSubmit = async (data: PlayerEditFormData) => {
     setIsLoading(true)
     try {
-      logger.database('PLAYER_EDIT_FORM', 'Updating player', undefined, { playerId: player.id })
+      logger.database('PLAYER_EDIT_FORM', 'Updating player', player.id)
 
       const formData = new FormData()
       formData.append('id', player.id)
@@ -140,7 +164,7 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
       const result = await updatePlayer(formData)
 
       if (result.success) {
-        logger.database('PLAYER_EDIT_FORM', 'Player updated successfully', undefined, { playerId: player.id })
+        logger.database('PLAYER_EDIT_FORM', 'Player updated successfully', player.id)
         toast({
           title: "Success",
           description: "Player updated successfully",
@@ -150,10 +174,10 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
         throw new Error(result.error || 'Update failed')
       }
     } catch (error) {
-      logger.error('PLAYER_EDIT_FORM', 'Failed to update player', { playerId: player.id }, error)
+      logger.error('Failed to update player', { operation: 'PLAYER_EDIT_FORM', metadata: { playerId: player.id } }, error as Error)
       toast({
         title: "Error",
-        description: result.error || "Failed to update player",
+        description: "Failed to update player",
         variant: "destructive",
       })
     } finally {
@@ -296,10 +320,10 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
           {/* Date of Birth */}
           <div className="space-y-2">
             <Label htmlFor="date_of_birth">Date of Birth</Label>
-            <Input
-              id="date_of_birth"
-              type="date"
-              {...register('date_of_birth')}
+            <DatePicker
+              value={watch('date_of_birth')}
+              onChange={(value) => setValue('date_of_birth', value)}
+              placeholder="Select date of birth"
             />
             {errors.date_of_birth && (
               <Alert variant="destructive">
