@@ -2,7 +2,7 @@
  * Utilidades comunes para Supabase
  */
 
-import { ApiResponse, ApiError } from './types'
+import { ApiResponse, ApiError, FileUploadResult } from './types'
 import { logger } from '../logger'
 
 /**
@@ -120,6 +120,21 @@ export function createErrorResponseFromSupabase(
   return createErrorResponse(apiError.message, {
     [apiError.code]: [apiError.message]
   })
+}
+
+export function createErrorResponseFromSupabaseForFileUpload(
+  error: any,
+  context: string
+): ApiResponse<FileUploadResult> {
+  const apiError = handleSupabaseError(error, context)
+  return {
+    success: false,
+    error: apiError.message,
+    data: {
+      success: false,
+      url: ''
+    }
+  }
 }
 
 /**

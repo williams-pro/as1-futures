@@ -114,5 +114,13 @@ export interface LogEntry {
   stack?: string
 }
 
+// Tipos para upload de archivos
+export interface FileUploadResult {
+  success: boolean
+  url: string
+  fileName?: string
+  fileSize?: number
+}
+
 
 
