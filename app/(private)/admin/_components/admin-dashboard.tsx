@@ -145,7 +145,7 @@ export function AdminDashboard({
   }
 
   useEffect(() => {
-    if (initialTournaments.length === 0 && initialTeams.length === 0 && initialPlayers.length === 0) {
+    if (initialTournaments.length === 0 && initialTeams.length === 0 && initialPlayers.length === 0 && initialMatches.length === 0 && initialScouts.length === 0) {
       fetchData()
     }
   }, [])
@@ -603,6 +603,10 @@ export function AdminDashboard({
               onSuccess={handleScoutUpdated}
               onCancel={() => setEditingScout(null)}
             />
+          ) : scouts.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No scouts found. Create your first scout to get started.
+            </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {scouts.map((scout) => (

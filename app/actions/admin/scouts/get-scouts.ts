@@ -53,29 +53,19 @@ export async function getScouts(): Promise<ApiResponse<AdminScout[]>> {
       }
     }
 
-    // 3. Obtener información de último login desde auth.users
-    const scoutIds = scouts.map(scout => scout.id)
-    const { data: authUsers, error: authError } = await supabase
-      .from('auth.users')
-      .select('id, last_sign_in_at')
-      .in('id', scoutIds)
-
-    // 4. Mapear datos combinando scouts con auth info
-    const adminScouts: AdminScout[] = scouts.map(scout => {
-      const authUser = authUsers?.find(auth => auth.id === scout.id)
-      return {
-        id: scout.id,
-        email: scout.email,
-        first_name: scout.first_name,
-        last_name: scout.last_name,
-        full_name: scout.full_name,
-        role: scout.role as 'scout' | 'admin',
-        is_active: scout.is_active,
-        created_at: scout.created_at,
-        updated_at: scout.updated_at,
-        last_login: authUser?.last_sign_in_at || undefined
-      }
-    })
+    // 3. Mapear datos de scouts
+    const adminScouts: AdminScout[] = scouts.map(scout => ({
+      id: scout.id,
+      email: scout.email,
+      first_name: scout.first_name,
+      last_name: scout.last_name,
+      full_name: scout.full_name,
+      role: scout.role as 'scout' | 'admin',
+      is_active: scout.is_active,
+      created_at: scout.created_at,
+      updated_at: scout.updated_at,
+      last_login: undefined // No disponible sin acceso directo a auth.users
+    }))
 
     logger.database('GET_SCOUTS', 'Scouts fetched successfully', user.id, {
       totalScouts: adminScouts.length,
