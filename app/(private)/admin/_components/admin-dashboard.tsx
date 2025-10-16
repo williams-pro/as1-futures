@@ -40,6 +40,7 @@ import { ScoutActions } from './scout-actions'
 import { PlayersSearch } from './players-search'
 import { logger } from '@/lib/logger'
 import { useToast } from '@/hooks/use-toast'
+import { formatDateForDisplay } from '@/lib/utils/date-utils'
 
 interface AdminMatch {
   id: string
@@ -502,7 +503,7 @@ export function AdminDashboard({
                         {player.dominant_foot} foot • {player.height_cm}cm
                       </div>
                       <div className="text-sm">
-                        Born: {player.date_of_birth}
+                        Born: {formatDateForDisplay(player.date_of_birth)}
                       </div>
                       {player.photo_url && (
                         <div className="mt-4">
@@ -582,7 +583,7 @@ export function AdminDashboard({
                         </div>
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {new Date(match.match_date).toLocaleDateString()} at {match.match_time}
+                        {formatDateForDisplay(match.match_date)} at {match.match_time}
                       </div>
                       {match.video_url && (
                         <div className="text-sm text-blue-600">
@@ -649,11 +650,11 @@ export function AdminDashboard({
                   <CardContent>
                     <div className="space-y-2">
                       <div className="text-sm text-muted-foreground">
-                        Created: {new Date(scout.created_at).toLocaleDateString()}
+                        Created: {formatDateForDisplay(scout.created_at)}
                       </div>
                       {scout.last_login && (
                         <div className="text-sm text-muted-foreground">
-                          Last login: {new Date(scout.last_login).toLocaleDateString()}
+                          Last login: {formatDateForDisplay(scout.last_login)}
                         </div>
                       )}
                     </div>

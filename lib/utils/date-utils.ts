@@ -94,3 +94,26 @@ export function isValidDateString(dateString: string): boolean {
     return false
   }
 }
+
+/**
+ * Formatea una fecha de la base de datos (YYYY-MM-DD) para mostrar en la UI de manera legible.
+ * @param dateString - Fecha en formato YYYY-MM-DD de la base de datos
+ * @returns Fecha formateada para mostrar (ej: "April 6, 2007")
+ */
+export function formatDateForDisplay(dateString: string): string {
+  if (!dateString) return '';
+  
+  try {
+    const date = parseISO(dateString);
+    
+    if (!isValid(date)) {
+      console.warn('Invalid date string for display:', dateString);
+      return dateString; // Devolver la fecha original si no se puede parsear
+    }
+    
+    return format(date, 'MMMM d, yyyy');
+  } catch (error) {
+    console.warn('Error formatting date for display:', error);
+    return dateString; // Devolver la fecha original si hay error
+  }
+}

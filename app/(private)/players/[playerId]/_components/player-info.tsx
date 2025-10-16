@@ -1,6 +1,7 @@
 import type { Player, Team } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, Ruler, Footprints, Shield, Hash } from "lucide-react"
+import { formatDateForDisplay } from "@/lib/utils/date-utils"
 
 interface PlayerInfoCardProps {
   player: Player
@@ -20,11 +21,8 @@ export function PlayerInfoCard({ player, team }: PlayerInfoCardProps) {
   }
 
   const age = calculateAge(player.birthDate)
-  const birthDateFormatted = new Date(player.birthDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
+  // Formatear para mostrar de manera legible
+  const birthDateFormatted = formatDateForDisplay(player.birthDate)
 
   return (
     <Card className="border-border bg-white">
@@ -72,7 +70,7 @@ export function PlayerInfoCard({ player, team }: PlayerInfoCardProps) {
           <div>
             <p className="text-sm text-muted-foreground">Verified Date of Birth</p>
             <p className="font-medium text-foreground">
-              {birthDateFormatted} ({age} years old)
+              Born: {birthDateFormatted} ({age} years old)
             </p>
           </div>
         </div>

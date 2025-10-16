@@ -9,6 +9,7 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { MATCHES_TEXTS } from "../_constants/matches"
 import type { MatchCardData } from "../_hooks/use-matches-supabase"
+import { formatDateForDisplay } from "@/lib/utils/date-utils"
 
 interface MatchCardProps {
   match: MatchCardData
@@ -41,13 +42,8 @@ export function MatchCard({ match }: MatchCardProps) {
   const homeTeam = match.homeTeam
   const awayTeam = match.awayTeam
 
-  const matchDate = new Date(match.date)
-  const formattedDate = matchDate.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })
+  // Formatear para mostrar de manera legible
+  const formattedDate = formatDateForDisplay(match.date)
 
   // Use the group from the match data
   const group = match.group
