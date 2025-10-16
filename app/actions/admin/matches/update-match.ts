@@ -14,8 +14,14 @@ const UpdateMatchSchema = z.object({
   group_id: z.string().uuid('Invalid group ID').optional(),
   home_team_id: z.string().uuid('Invalid home team ID').optional(),
   away_team_id: z.string().uuid('Invalid away team ID').optional(),
-  match_date: z.string().min(1, 'Match date is required').optional(),
-  match_time: z.string().min(1, 'Match time is required').optional(),
+  match_date: z.string()
+    .min(1, 'Match date is required')
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+    .optional(),
+  match_time: z.string()
+    .min(1, 'Match time is required')
+    .regex(/^\d{2}:\d{2}$/, 'Time must be in HH:MM format')
+    .optional(),
   video_url: z.string().url('Invalid video URL').optional().or(z.literal(''))
 })
 
@@ -116,7 +122,21 @@ export async function updateMatch(formData: FormData): Promise<ApiResponse<{ id:
     if (data.group_id !== undefined) updateData.group_id = data.group_id
     if (data.home_team_id !== undefined) updateData.home_team_id = data.home_team_id
     if (data.away_team_id !== undefined) updateData.away_team_id = data.away_team_id
-    if (data.match_date !== undefined) updateData.match_date = data.match_date
+    
+    // Convert date from YYYY-MM-DD to ISO format for database
+    if (data.match_date !== undefined) {
+      try {
+        const date = new Date(data.match_date + 'T00:00:00.000Z')
+        updateData.match_date = date.toISOString()
+      } catch (error) {
+        return {
+          success: false,
+          error: 'Invalid date format',
+          data: undefined
+        }
+      }
+    }
+    
     if (data.match_time !== undefined) updateData.match_time = data.match_time
     if (data.video_url !== undefined) {
       updateData.video_url = data.video_url && data.video_url.trim() !== '' ? data.video_url : null
@@ -161,4 +181,6 @@ export async function updateMatch(formData: FormData): Promise<ApiResponse<{ id:
     return createErrorResponseFromSupabase(error, 'UPDATE_MATCH')
   }
 }
+
+
 

@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import { useSupabaseAuth } from '@/hooks/use-supabase-auth'
 import { toggleFavorite as toggleFavoriteAction } from '@/app/actions/favorites/toggle-favorite'
 import { toggleExclusive as toggleExclusiveAction } from '@/app/actions/favorites/toggle-exclusive'
+import { removeFromFavorites as removeFromFavoritesAction } from '@/app/actions/favorites/remove-from-favorites'
 import { getMyFavorites } from '@/app/actions/favorites/get-my-favorites'
 import { getTournaments } from '@/app/actions/tournaments/get-tournaments'
 import { reorderFavorites as reorderFavoritesAction } from '@/app/actions/favorites/reorder-favorites'
@@ -55,6 +56,7 @@ export interface FavoritesContextType {
   isExclusive: (playerId: string) => boolean
   toggleFavorite: (playerId: string) => Promise<void>
   toggleExclusive: (playerId: string) => Promise<void>
+  removeFromFavorites: (playerId: string) => Promise<void>
   canAddExclusive: () => boolean
   refreshFavorites: () => Promise<void>
   
@@ -271,6 +273,39 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     }
   }, [user, isExclusive, canAddExclusive, currentTournamentId, loadData, toast])
 
+  const removeFromFavorites = useCallback(async (playerId: string) => {
+    if (!user || !currentTournamentId) return
+
+    try {
+      const formData = new FormData()
+      formData.append('playerId', playerId)
+      formData.append('tournamentId', currentTournamentId)
+
+      const result = await removeFromFavoritesAction(formData)
+      
+      if (result.success) {
+        await loadData()
+        
+        toast({
+          title: "Success",
+          description: "Removed from favorites",
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to remove from favorites",
+          variant: "destructive",
+        })
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to remove from favorites",
+        variant: "destructive",
+      })
+    }
+  }, [user, currentTournamentId, loadData, toast])
+
   const reorderFavorites = useCallback(async (reorderedFavorites: Favorite[]) => {
     if (!currentTournamentId) {
       toast({
@@ -282,41 +317,43 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // Prepare reorder data with sequential display_order (0, 1, 2, ...)
+      const reorderData = reorderedFavorites.map((fav, index) => ({
+        id: fav.id,
+        display_order: index
+      }))
+
+      // Update database first
+      const result = await reorderFavoritesAction(currentTournamentId, reorderData)
+      
+      if (!result.success) {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to save order",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Only update local state after successful database update
       const withUpdatedOrder = reorderedFavorites.map((fav, index) => ({
         ...fav,
         order: index,
       }))
       setFavorites(withUpdatedOrder)
 
-      const reorderData = reorderedFavorites.map((fav, index) => ({
-        id: fav.id,
-        display_order: index
-      }))
-
-      const result = await reorderFavoritesAction(currentTournamentId, reorderData)
-      
-      if (!result.success) {
-        await loadData()
-        toast({
-          title: "Error",
-          description: result.error || "Failed to save order",
-          variant: "destructive",
-        })
-      } else {
-        toast({
-          title: "Success",
-          description: "Order saved successfully",
-        })
-      }
+      toast({
+        title: "Success",
+        description: "Order saved successfully",
+      })
     } catch (err) {
-      await loadData()
       toast({
         title: "Error",
         description: "Failed to save order",
         variant: "destructive",
       })
     }
-  }, [currentTournamentId, loadData, toast])
+  }, [currentTournamentId, toast])
 
   const refreshFavorites = useCallback(async () => {
     await loadData()
@@ -333,6 +370,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     isExclusive,
     toggleFavorite,
     toggleExclusive,
+    removeFromFavorites,
     canAddExclusive,
     refreshFavorites,
     reorderFavorites,

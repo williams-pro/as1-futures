@@ -23,6 +23,14 @@ export function AppSidebar() {
 
   const isCollapsed = state === "collapsed"
 
+  // Debug logging
+  console.log('AppSidebar debug:', {
+    totalFavorites,
+    totalExclusives,
+    isLoading,
+    userNavigation: userNavigation.map(item => item.name)
+  })
+
   if (!user) return null
 
   return (

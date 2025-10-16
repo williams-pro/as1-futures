@@ -38,7 +38,7 @@ export function TeamActions({ team, onEdit, onDeleted }: TeamActionsProps) {
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
-      logger.database('TEAM_ACTIONS', 'Deleting team', undefined, { teamId: team.id })
+      logger.database('TEAM_ACTIONS', 'Deleting team', team.id)
 
       const formData = new FormData()
       formData.append('id', team.id)
@@ -46,7 +46,7 @@ export function TeamActions({ team, onEdit, onDeleted }: TeamActionsProps) {
       const result = await deleteTeam(formData)
 
       if (result.success) {
-        logger.database('TEAM_ACTIONS', 'Team deleted successfully', undefined, { teamId: team.id })
+        logger.database('TEAM_ACTIONS', 'Team deleted successfully', team.id)
         toast({
           title: "Success",
           description: `Team "${team.name}" deleted successfully`,
@@ -56,10 +56,10 @@ export function TeamActions({ team, onEdit, onDeleted }: TeamActionsProps) {
         throw new Error(result.error || 'Delete failed')
       }
     } catch (error) {
-      logger.error('TEAM_ACTIONS', 'Failed to delete team', { teamId: team.id }, error)
+      logger.error('Failed to delete team', { operation: 'TEAM_ACTIONS', metadata: { teamId: team.id } }, error as Error)
       toast({
         title: "Error",
-        description: result.error || "Failed to delete team",
+        description: "Failed to delete team",
         variant: "destructive",
       })
     } finally {
@@ -114,4 +114,6 @@ export function TeamActions({ team, onEdit, onDeleted }: TeamActionsProps) {
     </DropdownMenu>
   )
 }
+
+
 

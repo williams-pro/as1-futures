@@ -24,8 +24,12 @@ const UpdateMatchSchema = z.object({
   group_id: z.string().uuid('Please select a group'),
   home_team_id: z.string().uuid('Please select home team'),
   away_team_id: z.string().uuid('Please select away team'),
-  match_date: z.string().min(1, 'Match date is required'),
-  match_time: z.string().min(1, 'Match time is required'),
+  match_date: z.string()
+    .min(1, 'Match date is required')
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+  match_time: z.string()
+    .min(1, 'Match time is required')
+    .regex(/^\d{2}:\d{2}$/, 'Time must be in HH:MM format'),
   video_url: z.string().url('Invalid video URL').optional().or(z.literal(''))
 })
 
@@ -79,6 +83,16 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
   const [loadingData, setLoadingData] = useState(true)
   const { toast } = useToast()
 
+  // Helper function to format date for input
+  const formatDateForInput = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0] // YYYY-MM-DD format
+    } catch {
+      return dateString
+    }
+  }
+
   const {
     register,
     handleSubmit,
@@ -95,7 +109,7 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
       group_id: match.group.id,
       home_team_id: match.home_team.id,
       away_team_id: match.away_team.id,
-      match_date: match.match_date,
+      match_date: formatDateForInput(match.match_date),
       match_time: match.match_time,
       video_url: match.video_url || ''
     }
@@ -125,11 +139,11 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
 
         // Extraer grupos únicos de los equipos
         const uniqueGroups = teamsResult.data?.reduce((acc: TournamentGroup[], team) => {
-          if (team.group && !acc.find(g => g.id === team.group.id)) {
+          if (team.group && !acc.find(g => g.id === team.group!.id)) {
             acc.push({
-              id: team.group.id,
-              name: team.group.name,
-              code: team.group.code,
+              id: team.group!.id,
+              name: team.group!.name,
+              code: team.group!.code,
               tournament_id: team.tournament_id
             })
           }
@@ -138,7 +152,7 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
         
         setGroups(uniqueGroups)
       } catch (error) {
-        logger.error('MATCH_EDIT_FORM', 'Failed to load data', { operation: 'MATCH_EDIT_FORM' }, error)
+        logger.error('Failed to load data', { operation: 'MATCH_EDIT_FORM' }, error as Error)
         toast({
           title: "Error",
           description: "Failed to load form data",
@@ -207,7 +221,7 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
         }
       }
     } catch (error) {
-      logger.error('MATCH_EDIT_FORM', 'Failed to update match', { operation: 'MATCH_EDIT_FORM' }, error)
+      logger.error('Failed to update match', { operation: 'MATCH_EDIT_FORM' }, error as Error)
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -269,7 +283,10 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
             {/* Tournament */}
             <div className="space-y-2">
               <Label htmlFor="tournament_id">Tournament *</Label>
-              <Select onValueChange={(value) => setValue('tournament_id', value)}>
+              <Select 
+                value={selectedTournamentId} 
+                onValueChange={(value) => setValue('tournament_id', value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select tournament" />
                 </SelectTrigger>
@@ -293,6 +310,7 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
             <div className="space-y-2">
               <Label htmlFor="group_id">Group *</Label>
               <Select 
+                value={selectedGroupId}
                 onValueChange={(value) => setValue('group_id', value)}
                 disabled={!selectedTournamentId}
               >
@@ -319,6 +337,7 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
             <div className="space-y-2">
               <Label htmlFor="home_team_id">Home Team *</Label>
               <Select 
+                value={watch('home_team_id')}
                 onValueChange={(value) => setValue('home_team_id', value)}
                 disabled={!selectedGroupId}
               >
@@ -345,6 +364,7 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
             <div className="space-y-2">
               <Label htmlFor="away_team_id">Away Team *</Label>
               <Select 
+                value={watch('away_team_id')}
                 onValueChange={(value) => setValue('away_team_id', value)}
                 disabled={!selectedGroupId}
               >
@@ -436,4 +456,6 @@ export function MatchEditForm({ match, onSuccess, onCancel }: MatchEditFormProps
     </Card>
   )
 }
+
+
 

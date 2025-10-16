@@ -23,6 +23,7 @@ interface DraggablePlayerCardProps {
   onRemove: () => void
   onToggleFavorite: () => void
   onToggleExclusive: () => void
+  sectionType?: "exclusives" | "favorites"
 }
 
 export function DraggablePlayerCard({
@@ -33,12 +34,14 @@ export function DraggablePlayerCard({
   onRemove,
   onToggleFavorite,
   onToggleExclusive,
+  sectionType = "favorites",
 }: DraggablePlayerCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: player.id,
   })
 
   const [showRemoveExclusiveDialog, setShowRemoveExclusiveDialog] = useState(false)
+  const [showRemoveFavoriteDialog, setShowRemoveFavoriteDialog] = useState(false)
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -59,6 +62,11 @@ export function DraggablePlayerCard({
   const handleConfirmRemoveExclusive = () => {
     onToggleExclusive()
     setShowRemoveExclusiveDialog(false)
+  }
+
+  const handleConfirmRemoveFavorite = () => {
+    onRemove()
+    setShowRemoveFavoriteDialog(false)
   }
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -197,7 +205,7 @@ export function DraggablePlayerCard({
                       size="icon"
                       onClick={(e) => {
                         e.stopPropagation()
-                        onRemove()
+                        setShowRemoveFavoriteDialog(true)
                       }}
                       className="h-7 w-7 rounded-md bg-slate-100 text-slate-600 hover:bg-rose-100 hover:text-rose-600 transition-all duration-200"
                     >
@@ -221,6 +229,23 @@ export function DraggablePlayerCard({
           description={`Are you sure you want to remove the exclusive status from ${player.firstName} ${player.lastName}? The player will remain in your favorites.`}
           confirmText="Remove Exclusive"
           cancelText="Cancel"
+        />
+
+        <ConfirmDialog
+          open={showRemoveFavoriteDialog}
+          onOpenChange={setShowRemoveFavoriteDialog}
+          onConfirm={handleConfirmRemoveFavorite}
+          title={sectionType === "exclusives" ? "Remove Exclusive Status?" : "Remove from Favorites?"}
+          description={
+            sectionType === "exclusives" 
+              ? `Are you sure you want to remove the exclusive status from ${player.firstName} ${player.lastName}? The player will remain in your favorites.`
+              : isExclusive
+                ? `Are you sure you want to remove the exclusive status from ${player.firstName} ${player.lastName}? The player will remain in your favorites.`
+                : `Are you sure you want to remove ${player.firstName} ${player.lastName} from your favorites? The player will no longer appear in any section.`
+          }
+          confirmText={sectionType === "exclusives" ? "Remove Exclusive" : isExclusive ? "Remove Exclusive" : "Remove"}
+          cancelText="Cancel"
+          variant={sectionType === "exclusives" || isExclusive ? "default" : "destructive"}
         />
       </div>
     </TooltipProvider>

@@ -81,3 +81,5 @@ BEGIN
   RAISE NOTICE '🔄 Next step: Run 01-create-tables.sql to create database structure';
 END $$;
 
+
+

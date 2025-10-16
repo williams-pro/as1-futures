@@ -62,9 +62,11 @@ export default function MatchesPage() {
         />
 
         {filteredMatches.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="flex flex-wrap gap-4 justify-start">
             {filteredMatches.map((match) => (
-              <MatchCard key={match.id} match={match} />
+              <div key={match.id} className="w-full xl:w-[calc(50%-0.5rem)] sm:min-w-[320px] max-w-[800px]">
+                <MatchCard match={match} />
+              </div>
             ))}
           </div>
         ) : (

@@ -1,6 +1,8 @@
 "use client"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useTournamentGroups } from "../_hooks/use-tournament-groups"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface MatchesFilterProps {
   selectedGroup: string
@@ -9,17 +11,35 @@ interface MatchesFilterProps {
 }
 
 export function MatchesFilter({ selectedGroup, onGroupChange, resultCount }: MatchesFilterProps) {
+  const { groups, loading } = useTournamentGroups()
+  
+  console.log('MatchesFilter - groups:', groups, 'loading:', loading)
+
+  if (loading) {
+    return (
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Skeleton className="w-[180px] h-10" />
+        </div>
+        <Skeleton className="w-24 h-6" />
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-4">
         <Select value={selectedGroup} onValueChange={onGroupChange}>
-          <SelectTrigger className="w-[180px] border-silver-white">
+          <SelectTrigger className="w-[180px] border-silver-white cursor-pointer">
             <SelectValue placeholder="All Groups" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Groups</SelectItem>
-            <SelectItem value="A">Group A</SelectItem>
-            <SelectItem value="B">Group B</SelectItem>
+            {groups.map((group) => (
+              <SelectItem key={group.id} value={group.code}>
+                {group.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

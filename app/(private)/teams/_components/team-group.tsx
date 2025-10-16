@@ -82,7 +82,7 @@ export function TeamGroup({ group }: TeamGroupProps) {
 
             <div className="flex flex-wrap gap-4 mx-auto">
               {groupTeams.map((team) => (
-                <div key={team.id} className="min-w-[280px] flex-1 max-w-[320px]">
+                <div key={team.id} className="min-w-[400px] flex-1 max-w-[450px]">
                   <TeamCard team={team} />
                 </div>
               ))}

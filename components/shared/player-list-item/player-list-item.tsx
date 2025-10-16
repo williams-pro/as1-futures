@@ -67,7 +67,7 @@ export function PlayerListItem({ player }: PlayerListItemProps) {
           "hover:shadow-elevation-3 hover:border-primary"
         )}>
           <CardContent className="p-0 h-full">
-            <div className="flex items-start gap-4 p-4 h-full min-h-[140px]">
+            <div className="flex items-start gap-4 p-4 h-full min-h-[160px]">
               {/* Player Avatar */}
               <PlayerCardAvatar
                 photoUrl={player.photoUrl}

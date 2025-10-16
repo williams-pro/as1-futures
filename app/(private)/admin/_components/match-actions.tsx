@@ -72,7 +72,7 @@ export function MatchActions({ match, onEdit, onDeleted }: MatchActionsProps) {
         })
       }
     } catch (error) {
-      logger.error('MATCH_ACTIONS', 'Failed to delete match', { matchId: match.id }, error)
+      logger.error('Failed to delete match', { operation: 'MATCH_ACTIONS', metadata: { matchId: match.id } }, error as Error)
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -131,4 +131,6 @@ export function MatchActions({ match, onEdit, onDeleted }: MatchActionsProps) {
     </>
   )
 }
+
+
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { getMatches } from '@/app/actions/matches/get-matches'
+import { getMatchesByGroup } from '@/app/actions/matches/get-matches-by-group'
 import { logger } from '@/lib/logger'
 
 interface MatchDetails {
@@ -66,9 +66,9 @@ export function useMatchesSupabase(groupCode?: string) {
         setLoading(true)
         setError(null)
         
-        logger.database('USE_MATCHES_SUPABASE', 'Fetching matches', undefined, { groupCode })
+        logger.database('USE_MATCHES_SUPABASE', 'Fetching matches', undefined)
         
-        const result = await getMatches(groupCode)
+        const result = await getMatchesByGroup(groupCode)
         
         if (result.success && result.data) {
           // Mapear datos de Supabase a formato compatible con componentes existentes
@@ -96,17 +96,14 @@ export function useMatchesSupabase(groupCode?: string) {
           }))
           
           setMatches(mappedMatches)
-          logger.database('USE_MATCHES_SUPABASE', 'Matches fetched successfully', undefined, { 
-            totalMatches: mappedMatches.length,
-            groupCode
-          })
+          logger.database('USE_MATCHES_SUPABASE', 'Matches fetched successfully', undefined)
         } else {
           throw new Error(result.error || 'Failed to fetch matches')
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
         setError(errorMessage)
-        logger.error('USE_MATCHES_SUPABASE', 'Failed to fetch matches', { groupCode }, err)
+        logger.error('Failed to fetch matches', { operation: 'USE_MATCHES_SUPABASE', metadata: { groupCode } }, err as Error)
       } finally {
         setLoading(false)
       }
@@ -121,4 +118,6 @@ export function useMatchesSupabase(groupCode?: string) {
     error 
   }
 }
+
+
 

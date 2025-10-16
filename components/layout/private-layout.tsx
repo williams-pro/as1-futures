@@ -56,7 +56,7 @@ export function PrivateLayoutWrapper({ children }: PrivateLayoutWrapperProps) {
         </header>
         
         {/* Contenido principal */}
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-2 xs:p-2 sm:p-8">
           {children}
         </main>
       </SidebarInset>

@@ -135,3 +135,5 @@ export function usePlayerDetailsSupabase(playerId: string) {
   }
 }
 
+
+

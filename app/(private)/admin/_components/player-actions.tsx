@@ -38,7 +38,7 @@ export function PlayerActions({ player, onEdit, onDeleted }: PlayerActionsProps)
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
-      logger.database('PLAYER_ACTIONS', 'Deleting player', undefined, { playerId: player.id })
+      logger.database('PLAYER_ACTIONS', 'Deleting player', player.id)
 
       const formData = new FormData()
       formData.append('id', player.id)
@@ -46,7 +46,7 @@ export function PlayerActions({ player, onEdit, onDeleted }: PlayerActionsProps)
       const result = await deletePlayer(formData)
 
       if (result.success) {
-        logger.database('PLAYER_ACTIONS', 'Player deleted successfully', undefined, { playerId: player.id })
+        logger.database('PLAYER_ACTIONS', 'Player deleted successfully', player.id)
         toast({
           title: "Success",
           description: `Player "${player.full_name}" deleted successfully`,
@@ -56,10 +56,10 @@ export function PlayerActions({ player, onEdit, onDeleted }: PlayerActionsProps)
         throw new Error(result.error || 'Delete failed')
       }
     } catch (error) {
-      logger.error('PLAYER_ACTIONS', 'Failed to delete player', { playerId: player.id }, error)
+      logger.error('Failed to delete player', { operation: 'PLAYER_ACTIONS', metadata: { playerId: player.id } }, error as Error)
       toast({
         title: "Error",
-        description: result.error || "Failed to delete player",
+        description: "Failed to delete player",
         variant: "destructive",
       })
     } finally {
@@ -114,4 +114,6 @@ export function PlayerActions({ player, onEdit, onDeleted }: PlayerActionsProps)
     </DropdownMenu>
   )
 }
+
+
 

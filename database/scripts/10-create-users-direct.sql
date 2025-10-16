@@ -125,3 +125,5 @@ SELECT id, email, first_name, last_name, is_active FROM admins;
 SELECT 'Scout profiles:' as info;
 SELECT id, email, first_name, last_name, is_active FROM scouts;
 
+
+

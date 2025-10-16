@@ -28,3 +28,5 @@ BEGIN
   RAISE NOTICE '👤 Scout credentials: williams.blanco@prointernacional.com / 1234AS';
 END $$;
 
+
+

@@ -71,7 +71,7 @@ export function ScoutActions({ scout, onEdit, onDeleted }: ScoutActionsProps) {
         })
       }
     } catch (error) {
-      logger.error('SCOUT_ACTIONS', 'Failed to delete scout', { scoutId: scout.id }, error)
+      logger.error('Failed to delete scout', { operation: 'SCOUT_ACTIONS', metadata: { scoutId: scout.id } }, error as Error)
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -130,4 +130,6 @@ export function ScoutActions({ scout, onEdit, onDeleted }: ScoutActionsProps) {
     </>
   )
 }
+
+
 

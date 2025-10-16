@@ -29,6 +29,7 @@ interface FavoritesSectionProps {
   onToggleExclusive: (playerId: string) => void
   emptyMessage: string | React.ReactNode
   variant?: "default" | "compact"
+  sectionType?: "exclusives" | "favorites"
 }
 
 export function FavoritesSection({
@@ -42,6 +43,7 @@ export function FavoritesSection({
   onToggleExclusive,
   emptyMessage,
   variant = "default",
+  sectionType = "favorites",
 }: FavoritesSectionProps) {
   const { isFavorite, isExclusive } = useFavorites()
 
@@ -101,6 +103,7 @@ export function FavoritesSection({
                   onRemove={() => onRemove(player.id)}
                   onToggleFavorite={() => onToggleFavorite(player.id)}
                   onToggleExclusive={() => onToggleExclusive(player.id)}
+                  sectionType={sectionType}
                 />
               ))}
             </div>

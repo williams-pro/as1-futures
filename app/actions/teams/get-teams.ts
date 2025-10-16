@@ -23,7 +23,7 @@ export async function getTeams(tournamentId: string): Promise<ApiResponse<TeamWi
   try {
     const supabase = await createServerClient()
     
-    logger.data("GET_TEAMS", "Fetching teams for tournament", { tournamentId })
+    logger.info("Fetching teams for tournament", { operation: "GET_TEAMS", metadata: { tournamentId } })
     
     const { data: teams, error } = await supabase
       .from('teams')
@@ -46,11 +46,11 @@ export async function getTeams(tournamentId: string): Promise<ApiResponse<TeamWi
       .order('name')
     
     if (error) {
-      logger.dataError("GET_TEAMS", "Failed to fetch teams", { tournamentId }, error)
+      logger.error("Failed to fetch teams", { operation: "GET_TEAMS", metadata: { tournamentId } }, error as Error)
       return {
         success: false,
         error: "Failed to fetch teams",
-        data: null
+        data: undefined
       }
     }
     
@@ -62,32 +62,37 @@ export async function getTeams(tournamentId: string): Promise<ApiResponse<TeamWi
       logo_url: team.logo_url,
       is_as1_team: team.is_as1_team,
       group: {
-        id: team.tournament_groups.id,
-        code: team.tournament_groups.code,
-        name: team.tournament_groups.name
+        id: (team.tournament_groups as any).id,
+        code: (team.tournament_groups as any).code,
+        name: (team.tournament_groups as any).name
       },
       created_at: team.created_at,
       updated_at: team.updated_at
     }))
     
-    logger.data("GET_TEAMS", "Teams fetched successfully", { 
-      tournamentId, 
-      count: transformedTeams.length 
+    logger.info("Teams fetched successfully", { 
+      operation: "GET_TEAMS",
+      metadata: { 
+        tournamentId, 
+        count: transformedTeams.length 
+      }
     })
     
     return {
       success: true,
       data: transformedTeams,
-      error: null
+      error: undefined
     }
     
   } catch (error) {
-    logger.dataError("GET_TEAMS", "Unexpected error fetching teams", { tournamentId }, error)
+    logger.error("Unexpected error fetching teams", { operation: "GET_TEAMS", metadata: { tournamentId } }, error as Error)
     return {
       success: false,
       error: "Unexpected error fetching teams",
-      data: null
+      data: undefined
     }
   }
 }
+
+
 

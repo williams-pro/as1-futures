@@ -22,18 +22,24 @@ export function PlayerCardInfo({
     <div className={cn("flex-1 min-w-0", className)}>
       <div className="space-y-1.5">
         {/* First Name */}
-        <div className="flex items-center justify-between gap-2">
-          <h4 className={cn("font-semibold text-foreground text-base leading-tight")}>
+        <div className="flex items-start justify-between gap-2">
+          <h4 className={cn(
+            "font-semibold text-foreground text-base leading-tight",
+            "truncate flex-1 min-w-0"
+          )}>
             {firstName}
           </h4>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 ml-2">
             {children}
           </div>
         </div>
         
         {/* Last Name */}
         <div className="flex items-center gap-2">
-          <h5 className={cn("font-medium text-foreground text-sm leading-tight")}>
+          <h5 className={cn(
+            "font-medium text-foreground text-sm leading-tight",
+            "truncate"
+          )}>
             {lastName}
           </h5>
         </div>

@@ -119,7 +119,14 @@ export interface Team {
 // =====================================================
 
 export const PlayerPosition = z.enum([
-  'Goalkeeper', 'Defender', 'Midfielder', 'Forward'
+  'GOALKEEPER',
+  'CENTRAL BACK',
+  'RIGHT BACK',
+  'LEFT BACK',
+  'D.MIDFIELDER',
+  'WINGER',
+  'MIDFIELDER',
+  'STRIKER'
 ])
 
 export const DominantFoot = z.enum(['Left', 'Right', 'Both'])

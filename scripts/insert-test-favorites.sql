@@ -41,3 +41,5 @@ FROM favorites f
 JOIN players p ON f.player_id = p.id
 WHERE f.scout_id = '00000000-0000-0000-0000-000000000001'
 ORDER BY f.display_order;
+
+

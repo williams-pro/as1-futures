@@ -218,3 +218,5 @@ export function ScoutCreateForm({ onSuccess, onCancel }: ScoutCreateFormProps) {
   )
 }
 
+
+

@@ -132,7 +132,7 @@ export function TeamsPageWrapper({ title, statsText }: TeamsPageWrapperProps) {
                   key={tab.value}
                   value={tab.value}
                   className={cn(
-                    "px-6 py-2 text-sm font-medium rounded-lg transition-all",
+                    "px-6 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer",
                     "data-[state=active]:bg-white data-[state=active]:shadow-sm",
                     "data-[state=active]:text-as1-charcoal data-[state=active]:border",
                     "data-[state=active]:border-as1-gold/20"

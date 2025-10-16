@@ -9,7 +9,7 @@ interface SidebarNavItemProps {
   item: NavigationItem
   isActive: boolean
   isCollapsed: boolean
-  badge?: number | React.ReactNode
+  badge?: number| React.ReactNode
 }
 
 export function SidebarNavItem({ item, isActive, isCollapsed, badge }: SidebarNavItemProps) {

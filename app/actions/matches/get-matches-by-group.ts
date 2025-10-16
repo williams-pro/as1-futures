@@ -32,11 +32,11 @@ interface MatchDetails {
   video_url?: string
 }
 
-export async function getMatches(groupCode?: string): Promise<ApiResponse<MatchDetails[]>> {
+export async function getMatchesByGroup(group?: string): Promise<ApiResponse<MatchDetails[]>> {
   try {
     // 1. Autenticación
     const supabase = await getSupabaseServerClient()
-    const user = await validateAuth(supabase, 'GET_MATCHES')
+    const user = await validateAuth(supabase, 'GET_MATCHES_BY_GROUP')
 
     // 2. Construir query base
     let query = supabase
@@ -70,16 +70,27 @@ export async function getMatches(groupCode?: string): Promise<ApiResponse<MatchD
       .order('match_date', { ascending: true })
       .order('match_time', { ascending: true })
 
-    // 3. Aplicar filtro de grupo si se especifica
-    if (groupCode && groupCode !== 'all') {
-      query = query.eq('group.code', groupCode)
+    // 3. Filtrar por grupo si se especifica
+    if (group && group !== 'all') {
+      // Primero necesitamos obtener el group_id del grupo
+      const { data: groupData } = await supabase
+        .from('tournament_groups')
+        .select('id')
+        .eq('code', group)
+        .single()
+      
+      if (groupData?.id) {
+        query = query.eq('group_id', groupData.id)
+        logger.database('GET_MATCHES_BY_GROUP', `Filtering by group_id: ${groupData.id} for group: ${group}`, user.id)
+      }
     }
 
+    // 4. Ejecutar query
     const { data: matches, error: matchesError } = await query
 
     if (matchesError) {
-      logger.databaseError('GET_MATCHES', 'Failed to fetch matches', user.id, matchesError)
-      return createErrorResponseFromSupabase(matchesError, 'GET_MATCHES') as ApiResponse<MatchDetails[]>
+      logger.databaseError('GET_MATCHES_BY_GROUP', 'Failed to fetch matches', user.id, matchesError)
+      return createErrorResponseFromSupabase(matchesError, 'GET_MATCHES_BY_GROUP') as ApiResponse<MatchDetails[]>
     }
 
     if (!matches) {
@@ -90,7 +101,7 @@ export async function getMatches(groupCode?: string): Promise<ApiResponse<MatchD
       }
     }
 
-    // 4. Mapear datos para compatibilidad
+    // 5. Mapear datos para compatibilidad
     const matchDetails: MatchDetails[] = matches.map(match => ({
       id: match.id,
       match_code: match.match_code,
@@ -118,14 +129,17 @@ export async function getMatches(groupCode?: string): Promise<ApiResponse<MatchD
       video_url: match.video_url
     }))
 
-    logger.database('GET_MATCHES', 'Matches fetched successfully', user.id)
+    logger.database('GET_MATCHES_BY_GROUP', `Matches fetched successfully for group: ${group || 'all'}, count: ${matchDetails.length}`, user.id)
+
+    // Debug: Log de matches por grupo
+    if (group && group !== 'all') {
+      const groupMatches = matchDetails.filter(match => match.group.code === group)
+      logger.database('GET_MATCHES_BY_GROUP', `Matches for group ${group}: ${groupMatches.map(m => m.match_code).join(', ')}`, user.id)
+    }
 
     return createSuccessResponse(matchDetails)
   } catch (error) {
-    logger.error('Unexpected error', { operation: 'GET_MATCHES' }, error as Error)
-    return createErrorResponseFromSupabase(error, 'GET_MATCHES') as ApiResponse<MatchDetails[]>
+    logger.error('Unexpected error', { operation: 'GET_MATCHES_BY_GROUP' }, error as Error)
+    return createErrorResponseFromSupabase(error, 'GET_MATCHES_BY_GROUP') as ApiResponse<MatchDetails[]>
   }
 }
-
-
-

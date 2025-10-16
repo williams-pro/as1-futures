@@ -56,7 +56,7 @@ export async function reorderFavorites(tournamentId: string, reorderedFavorites:
     // Check for any errors
     const errors = results.filter(result => result.error)
     if (errors.length > 0) {
-      logger.databaseError('REORDER_FAVORITES', 'Error updating favorite order', tournamentId, errors[0].error)
+      logger.databaseError('REORDER_FAVORITES', 'Error updating favorite order', tournamentId, errors[0].error as Error)
       return createErrorResponseFromSupabase(errors[0].error, 'REORDER_FAVORITES')
     }
 
@@ -71,4 +71,6 @@ export async function reorderFavorites(tournamentId: string, reorderedFavorites:
     return createErrorResponseFromSupabase(error, 'REORDER_FAVORITES')
   }
 }
+
+
 
