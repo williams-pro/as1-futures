@@ -29,7 +29,7 @@ export function useFavoritesPage() {
   const [pendingRegularOrder, setPendingRegularOrder] = useState<Player[]>([])
   const [isSaving, setIsSaving] = useState(false)
 
-  // Transform favorites data to Player objects using data from context
+  // Transform favorites data to Player objects with team info using data from context
   const players = useMemo(() => {
     return favorites
       .filter(fav => fav.player) // Only include favorites with player data
@@ -46,8 +46,9 @@ export function useFavoritesPage() {
         height: undefined, // Not available in favorites data
         weight: undefined, // Not available in favorites data
         nationality: undefined, // Not available in favorites data
-        dominantFoot: undefined // Not available in favorites data
-      } as Player))
+        dominantFoot: undefined, // Not available in favorites data
+        team: fav.player!.team, // Include team information
+      } as Player & { team?: { id: string; name: string; team_code: string; group?: { id: string; name: string; code: string } } }))
   }, [favorites])
 
   // Separate exclusive and regular favorite players

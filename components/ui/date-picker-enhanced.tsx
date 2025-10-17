@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format, parseISO, isValid } from "date-fns"
+import { format, parseISO, isValid as isValidDate } from "date-fns"
 import { Calendar as CalendarIcon, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -11,23 +11,25 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { formatDateForInput, parseDateForCalendar, formatCalendarDateForDatabase, isValidDateString } from "@/lib/utils/date-utils"
 
-interface DatePickerProps {
+interface DatePickerEnhancedProps {
   value?: string
   onChange?: (value: string) => void
   placeholder?: string
   disabled?: boolean
   className?: string
   allowClear?: boolean
+  showValidation?: boolean
 }
 
-export function DatePicker({
+export function DatePickerEnhanced({
   value,
   onChange,
   placeholder = "YYYY-MM-DD",
   disabled = false,
   className,
-  allowClear = true
-}: DatePickerProps) {
+  allowClear = true,
+  showValidation = true
+}: DatePickerEnhancedProps) {
   const [open, setOpen] = React.useState(false)
   const [inputValue, setInputValue] = React.useState(value || '')
   const [isInputFocused, setIsInputFocused] = React.useState(false)
@@ -46,7 +48,7 @@ export function DatePicker({
     const newValue = e.target.value
     setInputValue(newValue)
     
-    // Validar y formatear la fecha mientras el usuario escribe
+    // Validar en tiempo real
     if (newValue.length === 10) { // YYYY-MM-DD completo
       if (isValidDateString(newValue)) {
         onChange?.(newValue)
@@ -59,33 +61,26 @@ export function DatePicker({
   const handleInputBlur = () => {
     setIsInputFocused(false)
     
-    // Al perder el foco, validar y formatear la fecha
+    // Al perder el foco, validar y formatear
     if (inputValue) {
       if (isValidDateString(inputValue)) {
-        // La fecha es válida, mantenerla
         onChange?.(inputValue)
       } else {
-        // La fecha no es válida, intentar parsear y formatear
+        // Intentar parsear formatos alternativos
         try {
           const date = parseISO(inputValue)
-          if (isValid(date)) {
+          if (isValidDate(date)) {
             const formattedDate = format(date, 'yyyy-MM-dd')
             setInputValue(formattedDate)
             onChange?.(formattedDate)
           } else {
-            // Si no se puede parsear, revertir al valor anterior
             setInputValue(value || '')
           }
         } catch {
-          // Si hay error, revertir al valor anterior
           setInputValue(value || '')
         }
       }
     }
-  }
-
-  const handleInputFocus = () => {
-    setIsInputFocused(true)
   }
 
   const handleCalendarSelect = (date: Date | undefined) => {
@@ -97,8 +92,7 @@ export function DatePicker({
     }
   }
 
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const handleClear = () => {
     setInputValue('')
     onChange?.('')
   }
@@ -113,27 +107,30 @@ export function DatePicker({
     }
   }
 
+  const isValid = inputValue ? isValidDateString(inputValue) : true
+  const isEmpty = !inputValue
+
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("space-y-1", className)}>
       <div className="relative">
         <Input
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           onBlur={handleInputBlur}
-          onFocus={handleInputFocus}
+          onFocus={() => setIsInputFocused(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            "pr-20", // Espacio para los botones
-            !inputValue && "text-muted-foreground"
+            "pr-16",
+            !isEmpty && !isValid && "border-red-500 focus-visible:ring-red-500",
+            !isEmpty && isValid && "border-green-500 focus-visible:ring-green-500"
           )}
         />
         
         {/* Botones de acción */}
         <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
-          {/* Botón de limpiar */}
           {allowClear && inputValue && !disabled && (
             <Button
               type="button"
@@ -146,7 +143,6 @@ export function DatePicker({
             </Button>
           )}
           
-          {/* Botón de calendario */}
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -171,13 +167,19 @@ export function DatePicker({
         </div>
       </div>
       
-      {/* Indicador de estado de validación */}
-      {inputValue && !isInputFocused && (
-        <div className="mt-1 text-xs">
-          {isValidDateString(inputValue) ? (
-            <span className="text-green-600">✓ Fecha válida</span>
+      {/* Indicador de validación */}
+      {showValidation && inputValue && !isInputFocused && (
+        <div className="text-xs">
+          {isValid ? (
+            <span className="text-green-600 flex items-center gap-1">
+              <span className="w-1 h-1 bg-green-600 rounded-full"></span>
+              Fecha válida
+            </span>
           ) : (
-            <span className="text-red-600">✗ Formato inválido (use YYYY-MM-DD)</span>
+            <span className="text-red-600 flex items-center gap-1">
+              <span className="w-1 h-1 bg-red-600 rounded-full"></span>
+              Formato inválido (use YYYY-MM-DD)
+            </span>
           )}
         </div>
       )}

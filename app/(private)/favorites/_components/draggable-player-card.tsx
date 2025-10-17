@@ -10,13 +10,26 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { GripVertical, X, ExternalLink } from "lucide-react"
 import { PlayerActionButton } from "@/components/shared/player-action-button"
 import type { Player } from "@/lib/types"
+
+interface PlayerWithTeam extends Player {
+  team?: {
+    id: string
+    name: string
+    team_code: string
+    group?: {
+      id: string
+      name: string
+      code: string
+    }
+  }
+}
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { ConfirmDialog } from "./confirm-dialog"
 
 interface DraggablePlayerCardProps {
-  player: Player
+  player: PlayerWithTeam
   isExclusive: boolean
   isFavorite: boolean
   canAddExclusive: boolean
@@ -124,22 +137,29 @@ export function DraggablePlayerCard({
 
               {/* Player Info */}
               <div className="flex-1 min-w-0 space-y-1">
+                 {/* Team Name - More Prominent */}
+                 {player.team && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs font-medium text-as1-gold bg-as1-gold/10 px-2 py-0.5 rounded-full border border-as1-gold/20">
+                      {player.team.name}
+                    </span>
+                  </div>
+                )}
+                {/* Player Name */}
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-foreground text-sm truncate leading-tight">
                     {player.firstName} {player.lastName}
                   </h3>
                 </div>
+                
+               
+                
+                {/* Player Details */}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="font-mono font-medium bg-slate-100/50 px-1.5 py-0.5 rounded">
                     #{player.jerseyNumber}
                   </span>
                   <span className="truncate">{player.position}</span>
-                  {player.team && (
-                    <>
-                      <span className="text-slate-300">•</span>
-                      <span className="truncate text-slate-500">{player.team.name}</span>
-                    </>
-                  )}
                 </div>
               </div>
 
