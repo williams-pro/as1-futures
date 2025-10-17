@@ -42,9 +42,9 @@ export function PlayersSearch({ players, onFilteredPlayers }: PlayersSearchProps
     if (searchTerm) {
       const term = searchTerm.toLowerCase()
       filtered = filtered.filter(player => 
-        player.first_name.toLowerCase().includes(term) ||
-        player.last_name.toLowerCase().includes(term) ||
-        player.full_name.toLowerCase().includes(term)
+        (player.first_name?.toLowerCase() || '').includes(term) ||
+        (player.last_name?.toLowerCase() || '').includes(term) ||
+        (player.full_name?.toLowerCase() || '').includes(term)
       )
     }
 
