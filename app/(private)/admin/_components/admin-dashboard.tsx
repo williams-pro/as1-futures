@@ -289,7 +289,7 @@ export function AdminDashboard({
   const activeTournaments = tournaments.filter(t => t.status === 'active')
   const totalTeams = teams.length
   const totalPlayers = players.length
-  const totalMatches = matches.length
+  const totalMatches = matches.length + specialMatches.length
   const totalScouts = scouts.length
   const activeScouts = scouts.filter(s => s.is_active).length
   const as1Teams = teams.filter(t => t.is_as1_team).length

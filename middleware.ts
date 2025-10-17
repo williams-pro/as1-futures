@@ -64,12 +64,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Proteger rutas de players - solo admins pueden acceder
-  if (pathname.startsWith('/players')) {
-    if (scout.role !== 'admin') {
-      return NextResponse.redirect(new URL('/teams', request.url))
-    }
+  // Proteger la página de lista de jugadores - solo detalles individuales permitidos
+  if (pathname === '/players') {
+    // Redirigir a teams si intentan acceder a la lista de jugadores
+    return NextResponse.redirect(new URL('/teams', request.url))
   }
+  
+  // Las rutas de detalles de jugadores (/players/[playerId]) son accesibles para scouts y admins
 
   return supabaseResponse
 }
