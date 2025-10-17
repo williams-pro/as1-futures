@@ -191,7 +191,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                   )}
                 </div>
 
-                <h1 className="text-4xl font-light text-foreground tracking-tight text-balance">
+                <h1 className="text-4xl font-semibold text-foreground tracking-tight text-balance">
                   {player.firstName} <span className="font-semibold">{player.lastName}</span>
                 </h1>
               </div>

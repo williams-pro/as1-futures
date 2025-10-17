@@ -20,43 +20,50 @@ export function PlayerCardInfo({
 }: PlayerCardInfoProps) {
   return (
     <div className={cn("flex-1 min-w-0", className)}>
-      <div className="space-y-1.5">
-        {/* First Name */}
-        <div className="flex items-start justify-between gap-2">
-          <h4 className={cn(
-            "font-semibold text-foreground text-base leading-tight",
-            "truncate flex-1 min-w-0"
-          )}>
-            {firstName}
-          </h4>
-          <div className="flex-shrink-0 ml-2">
-            {children}
+      <div className="flex items-start justify-between gap-3">
+        {/* Primera columna - Información del jugador */}
+        <div className="flex-1 min-w-0">
+          {/* First Name */}
+          <div>
+            <h4 className={cn(
+              "text-foreground font-bold text-base leading-tight",
+              "truncate"
+            )}>
+              {firstName}
+            </h4>
+          </div>
+          
+          {/* Last Name */}
+          <div>
+            <h5 className={cn(
+              "text-base font-bold text-foreground leading-tight",
+              "truncate"
+            )}>
+              {lastName}
+            </h5>
+          </div>
+          
+          {/* Jersey Number */}
+          <div>
+            <span className={cn("font-mono text-sm text-muted-foreground")}>
+              #{jerseyNumber}
+            </span>
+          </div>
+          
+          {/* Position */}
+          <div>
+            <span className={cn("text-sm text-muted-foreground")}>
+              {position}
+            </span>
           </div>
         </div>
-        
-        {/* Last Name */}
-        <div className="flex items-center gap-2">
-          <h5 className={cn(
-            "font-medium text-foreground text-sm leading-tight",
-            "truncate"
-          )}>
-            {lastName}
-          </h5>
-        </div>
-        
-        {/* Jersey Number */}
-        <div className="flex items-center gap-2">
-          <span className={cn("font-mono text-sm text-muted-foreground")}>
-            #{jerseyNumber}
-          </span>
-        </div>
-        
-        {/* Position */}
-        <div className="flex items-center gap-2">
-          <span className={cn("text-sm text-muted-foreground")}>
-            {position}
-          </span>
-        </div>
+
+        {/* Segunda columna - Iconos (children) */}
+        {children && (
+          <div className="flex-shrink-0 flex items-start">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   )

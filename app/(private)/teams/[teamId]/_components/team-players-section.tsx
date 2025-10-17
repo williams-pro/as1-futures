@@ -19,7 +19,7 @@ export function TeamPlayersSection({ players }: TeamPlayersSectionProps) {
       {players.length > 0 ? (
         <div className="flex flex-wrap gap-4 justify-start">
           {players.map((player) => (
-            <div key={player.id} className="w-full lg:w-[calc(50%-0.5rem)] xl:w-[calc(25%-0.75rem)] min-w-[280px] xl:max-w-[450px]">
+            <div key={player.id} className="w-full lg:w-[calc(50%-0.5rem)] xl:w-[calc(33.333%-0.75rem)] min-w-[280px] xl:max-w-[450px]">
               <PlayerListItem player={player} />
             </div>
           ))}
