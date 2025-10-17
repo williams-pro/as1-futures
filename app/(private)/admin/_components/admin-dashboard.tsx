@@ -18,7 +18,8 @@ import {
   Calendar, 
   Plus,
   BarChart3,
-  Settings
+  Settings,
+  Star
 } from 'lucide-react'
 import { Tournament, Team, Player, TournamentGroup } from '@/lib/types/admin.types'
 import { getTournaments } from '@/app/actions/admin/tournaments/get-tournaments'
@@ -26,6 +27,7 @@ import { getTeams } from '@/app/actions/admin/teams/get-teams'
 import { getPlayers } from '@/app/actions/admin/players/get-players'
 import { getMatches } from '@/app/actions/admin/matches/get-matches'
 import { getScouts } from '@/app/actions/admin/scouts/get-scouts'
+import { getSpecialMatches } from '@/app/actions/admin/special-matches'
 import { TeamActions } from './team-actions'
 import { PlayerActions } from './player-actions'
 import { TeamEditForm } from './team-edit-form'
@@ -38,6 +40,9 @@ import { ScoutCreateForm } from './scout-create-form'
 import { ScoutEditForm } from './scout-edit-form'
 import { ScoutActions } from './scout-actions'
 import { PlayersSearch } from './players-search'
+import { SpecialMatchCard } from './special-match-card'
+import { SpecialMatchForm } from './special-match-form'
+import type { SpecialMatchWithTeams } from '@/lib/types/special-matches.types'
 import { logger } from '@/lib/logger'
 import { useToast } from '@/hooks/use-toast'
 import { formatDateForDisplay } from '@/lib/utils/date-utils'
@@ -75,6 +80,7 @@ interface AdminDashboardProps {
   initialPlayers?: Player[]
   initialMatches?: AdminMatch[]
   initialScouts?: AdminScout[]
+  initialSpecialMatches?: SpecialMatchWithTeams[]
 }
 
 export function AdminDashboard({ 
@@ -82,7 +88,8 @@ export function AdminDashboard({
   initialTeams = [], 
   initialPlayers = [],
   initialMatches = [],
-  initialScouts = []
+  initialScouts = [],
+  initialSpecialMatches = []
 }: AdminDashboardProps) {
   const [tournaments, setTournaments] = useState<Tournament[]>(initialTournaments)
   const [teams, setTeams] = useState<Team[]>(initialTeams)
@@ -90,6 +97,7 @@ export function AdminDashboard({
   const [filteredPlayers, setFilteredPlayers] = useState<Player[]>(initialPlayers)
   const [matches, setMatches] = useState<AdminMatch[]>(initialMatches)
   const [scouts, setScouts] = useState<AdminScout[]>(initialScouts)
+  const [specialMatches, setSpecialMatches] = useState<SpecialMatchWithTeams[]>(initialSpecialMatches)
   const [loading, setLoading] = useState(false)
   const [editingTeam, setEditingTeam] = useState<Team | null>(null)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
@@ -98,6 +106,8 @@ export function AdminDashboard({
   const [creatingScout, setCreatingScout] = useState(false)
   const [editingMatch, setEditingMatch] = useState<AdminMatch | null>(null)
   const [editingScout, setEditingScout] = useState<AdminScout | null>(null)
+  const [creatingSpecialMatch, setCreatingSpecialMatch] = useState(false)
+  const [editingSpecialMatch, setEditingSpecialMatch] = useState<SpecialMatchWithTeams | null>(null)
   const [groups, setGroups] = useState<TournamentGroup[]>([])
   const { toast } = useToast()
 
@@ -106,12 +116,13 @@ export function AdminDashboard({
     try {
       logger.database('ADMIN_DASHBOARD', 'Fetching dashboard data')
       
-      const [tournamentsResult, teamsResult, playersResult, matchesResult, scoutsResult] = await Promise.all([
+      const [tournamentsResult, teamsResult, playersResult, matchesResult, scoutsResult, specialMatchesResult] = await Promise.all([
         getTournaments(),
         getTeams(),
         getPlayers(),
         getMatches(),
-        getScouts()
+        getScouts(),
+        getSpecialMatches()
       ])
 
       if (tournamentsResult.success) {
@@ -134,6 +145,10 @@ export function AdminDashboard({
 
       if (scoutsResult.success) {
         setScouts(scoutsResult.data || [])
+      }
+
+      if (specialMatchesResult.success) {
+        setSpecialMatches(specialMatchesResult.matches || [])
       }
 
       logger.database('ADMIN_DASHBOARD', 'Dashboard data fetched successfully')
@@ -232,6 +247,29 @@ export function AdminDashboard({
   }
 
   const handleMatchDeleted = () => {
+    fetchData()
+  }
+
+  // Special Matches handlers
+  const handleCreateSpecialMatch = () => {
+    setCreatingSpecialMatch(true)
+  }
+
+  const handleSpecialMatchCreated = () => {
+    setCreatingSpecialMatch(false)
+    fetchData()
+  }
+
+  const handleEditSpecialMatch = (match: SpecialMatchWithTeams) => {
+    setEditingSpecialMatch(match)
+  }
+
+  const handleSpecialMatchUpdated = () => {
+    setEditingSpecialMatch(null)
+    fetchData()
+  }
+
+  const handleSpecialMatchDeleted = () => {
     fetchData()
   }
 
@@ -343,12 +381,13 @@ export function AdminDashboard({
       {/* Main Content Tabs */}
       <Tabs defaultValue="tournaments" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
-          <TabsTrigger value="teams">Teams</TabsTrigger>
-          <TabsTrigger value="players">Players</TabsTrigger>
-          <TabsTrigger value="matches">Matches</TabsTrigger>
-          <TabsTrigger value="scouts">Scouts</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="tournaments" className="cursor-pointer">Tournaments</TabsTrigger>
+          <TabsTrigger value="teams" className="cursor-pointer">Teams</TabsTrigger>
+          <TabsTrigger value="players" className="cursor-pointer">Players</TabsTrigger>
+          <TabsTrigger value="matches" className="cursor-pointer">Matches</TabsTrigger>
+          <TabsTrigger value="special-matches" className="cursor-pointer">Special Matches</TabsTrigger>
+          <TabsTrigger value="scouts" className="cursor-pointer">Scouts</TabsTrigger>
+          <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tournaments" className="space-y-4">
@@ -593,6 +632,42 @@ export function AdminDashboard({
                     </div>
                   </CardContent>
                 </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="special-matches" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold">Special Matches</h2>
+            <Button onClick={handleCreateSpecialMatch} disabled={creatingSpecialMatch}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Special Match
+            </Button>
+          </div>
+          
+          {creatingSpecialMatch ? (
+            <SpecialMatchForm
+              tournamentId={tournaments[0]?.id || ''}
+              onSuccess={handleSpecialMatchCreated}
+              onCancel={() => setCreatingSpecialMatch(false)}
+            />
+          ) : editingSpecialMatch ? (
+            <SpecialMatchForm
+              tournamentId={editingSpecialMatch.tournament_id}
+              match={editingSpecialMatch}
+              onSuccess={handleSpecialMatchUpdated}
+              onCancel={() => setEditingSpecialMatch(null)}
+            />
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {specialMatches.map((match) => (
+                <SpecialMatchCard
+                  key={match.id}
+                  match={match}
+                  onEdit={handleEditSpecialMatch}
+                  onDelete={handleSpecialMatchDeleted}
+                />
               ))}
             </div>
           )}

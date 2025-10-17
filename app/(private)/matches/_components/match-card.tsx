@@ -45,16 +45,36 @@ export function MatchCard({ match }: MatchCardProps) {
   // Formatear para mostrar de manera legible
   const formattedDate = formatDateForDisplay(match.date)
 
-  // Use the group from the match data
-  const group = match.group
+  // Use the group from the match data, or match type for special matches
+  const group = match.isSpecialMatch ? match.matchType : match.group
   const groupColors = {
     A: "bg-blue-100 text-blue-800 border-blue-200",
     B: "bg-green-100 text-green-800 border-green-200",
+    // Special match types
+    "Semifinal": "bg-purple-100 text-purple-800 border-purple-200",
+    "Final": "bg-yellow-100 text-yellow-800 border-yellow-200",
+    "Quarterfinal": "bg-orange-100 text-orange-800 border-orange-200",
+    "Round of 16": "bg-pink-100 text-pink-800 border-pink-200",
+    "Third Place": "bg-gray-100 text-gray-800 border-gray-200",
+    "Friendly": "bg-cyan-100 text-cyan-800 border-cyan-200",
+    "Exhibition": "bg-indigo-100 text-indigo-800 border-indigo-200",
+    // Default for custom match types
+    "default": "bg-slate-100 text-slate-800 border-slate-200",
   }
 
   const groupLabels = {
     A: MATCHES_TEXTS.MATCH_CARD.GROUPS.A,
     B: MATCHES_TEXTS.MATCH_CARD.GROUPS.B,
+    // Special match types use their own names
+    "Semifinal": "Semifinal",
+    "Final": "Final",
+    "Quarterfinal": "Quarterfinal",
+    "Round of 16": "Round of 16",
+    "Third Place": "Third Place",
+    "Friendly": "Friendly",
+    "Exhibition": "Exhibition",
+    // Default for custom match types
+    "default": "Special Match",
   }
 
   return (
@@ -63,8 +83,8 @@ export function MatchCard({ match }: MatchCardProps) {
         <div className="space-y-4 h-full flex flex-col">
           {/* Header - Group and Date */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 flex-shrink-0">
-            <Badge className={cn("font-medium w-fit border", groupColors[group as keyof typeof groupColors])}>
-              {groupLabels[group as keyof typeof groupLabels]}
+            <Badge className={cn("font-medium w-fit border", groupColors[group as keyof typeof groupColors] || groupColors.default)}>
+              {groupLabels[group as keyof typeof groupLabels] || group}
             </Badge>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4 flex-shrink-0" />
