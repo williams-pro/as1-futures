@@ -6,6 +6,7 @@ import { toggleFavorite as toggleFavoriteAction } from '@/app/actions/favorites/
 import { toggleExclusive as toggleExclusiveAction } from '@/app/actions/favorites/toggle-exclusive'
 import { removeFromFavorites as removeFromFavoritesAction } from '@/app/actions/favorites/remove-from-favorites'
 import { getMyFavorites } from '@/app/actions/favorites/get-my-favorites'
+import { getMyExclusives } from '@/app/actions/favorites/get-my-exclusives'
 import { getTournaments } from '@/app/actions/tournaments/get-tournaments'
 import { reorderFavorites as reorderFavoritesAction } from '@/app/actions/favorites/reorder-favorites'
 import { useToast } from '@/hooks/use-toast'
@@ -21,6 +22,7 @@ export interface Favorite {
   createdAt: string
   isExclusive: boolean
   order?: number
+  favoriteOrder?: number
   player?: {
     id: string
     first_name: string
@@ -62,6 +64,8 @@ export interface FavoritesContextType {
   
   // Reordering (for drag & drop)
   reorderFavorites: (reorderedFavorites: Favorite[]) => Promise<void>
+  setFavorites: (favorites: Favorite[]) => void
+  setExclusives: (exclusives: Favorite[]) => void
 }
 
 // =====================================================
@@ -86,6 +90,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   
   // State
   const [favorites, setFavorites] = useState<Favorite[]>([])
+  const [exclusives, setExclusives] = useState<Favorite[]>([])
   const [currentTournamentId, setCurrentTournamentId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -114,8 +119,11 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       const activeTournament = tournamentsResult.tournaments[0]
       setCurrentTournamentId(activeTournament.id)
 
-      // Load favorites for the active tournament
-      const favoritesResult = await getMyFavorites(activeTournament.id)
+      // Load both favorites and exclusives for the active tournament
+      const [favoritesResult, exclusivesResult] = await Promise.all([
+        getMyFavorites(activeTournament.id),
+        getMyExclusives(activeTournament.id)
+      ])
       
       if (favoritesResult.success && favoritesResult.players) {
         const convertedFavorites: Favorite[] = favoritesResult.players.map((favorite: any) => ({
@@ -125,6 +133,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           createdAt: favorite.created_at || new Date().toISOString(),
           isExclusive: favorite.is_exclusive || false,
           order: favorite.display_order || 0,
+          favoriteOrder: favorite.favorite_display_order || 0,
           player: favorite.player ? {
             id: favorite.player.id,
             first_name: favorite.player.first_name,
@@ -152,6 +161,43 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           setError(favoritesResult.error || 'Failed to load favorites')
         }
       }
+      
+      if (exclusivesResult.success && exclusivesResult.players) {
+        const convertedExclusives: Favorite[] = exclusivesResult.players.map((exclusive: any) => ({
+          id: exclusive.id, // Favorite ID from database
+          playerId: exclusive.player.id,
+          scoutId: user.id,
+          createdAt: exclusive.created_at || new Date().toISOString(),
+          isExclusive: exclusive.is_exclusive || false,
+          order: exclusive.display_order || 0,
+          favoriteOrder: exclusive.favorite_display_order || 0,
+          player: exclusive.player ? {
+            id: exclusive.player.id,
+            first_name: exclusive.player.first_name,
+            last_name: exclusive.player.last_name,
+            jersey_number: exclusive.player.jersey_number,
+            position: exclusive.player.position,
+            photo_url: exclusive.player.photo_url,
+            team: exclusive.player.team ? {
+              id: exclusive.player.team.id,
+              name: exclusive.player.team.name,
+              team_code: exclusive.player.team.team_code,
+              group: exclusive.player.team.group ? {
+                id: exclusive.player.team.group.id,
+                name: exclusive.player.team.group.name,
+                code: exclusive.player.team.group.code
+              } : undefined
+            } : undefined
+          } : undefined
+        }))
+        
+        setExclusives(convertedExclusives)
+      } else {
+        setExclusives([])
+        if (!exclusivesResult.success) {
+          setError(exclusivesResult.error || 'Failed to load exclusives')
+        }
+      }
     } catch (err) {
       console.error('Error loading favorites:', err)
       setError('Failed to load favorites')
@@ -176,7 +222,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   }, [user, authLoading])
 
 
-  const exclusives = favorites.filter((f) => f.isExclusive)
+  const exclusiveFavorites = favorites.filter((f) => f.isExclusive)
 
 
   const isFavorite = useCallback((playerId: string) => {
@@ -317,10 +363,11 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      // Prepare reorder data with sequential display_order (0, 1, 2, ...)
-      const reorderData = reorderedFavorites.map((fav, index) => ({
+      // Prepare reorder data with separate orders for exclusives and favorites
+      const reorderData = reorderedFavorites.map((fav) => ({
         id: fav.id,
-        display_order: index
+        display_order: fav.order,
+        favorite_display_order: fav.favoriteOrder
       }))
 
       // Update database first
@@ -339,6 +386,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       const withUpdatedOrder = reorderedFavorites.map((fav, index) => ({
         ...fav,
         order: index,
+        favoriteOrder: index,
       }))
       setFavorites(withUpdatedOrder)
 
@@ -374,6 +422,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     canAddExclusive,
     refreshFavorites,
     reorderFavorites,
+    setFavorites,
+    setExclusives,
   }
 
   return (

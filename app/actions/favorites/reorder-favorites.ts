@@ -8,17 +8,18 @@ interface ReorderFavoritesRequest {
   tournamentId: string
   reorderedFavorites: Array<{
     id: string
-    display_order: number
+    display_order?: number        // Para exclusivos
+    favorite_display_order?: number // Para favoritos
   }>
 }
 
 /**
- * Reorder favorites by updating their display_order in the database
+ * Reorder favorites by updating their display_order and/or favorite_display_order in the database
  * @param tournamentId - Tournament ID
  * @param reorderedFavorites - Array of favorite IDs with their new order
  * @returns Success response or error
  */
-export async function reorderFavorites(tournamentId: string, reorderedFavorites: Array<{ id: string; display_order: number }>) {
+export async function reorderFavorites(tournamentId: string, reorderedFavorites: Array<{ id: string; display_order?: number; favorite_display_order?: number }>) {
   try {
     const supabase = await createServerClient()
     
@@ -36,20 +37,29 @@ export async function reorderFavorites(tournamentId: string, reorderedFavorites:
       return createSuccessResponse({ message: 'No favorites to reorder' })
     }
 
-    logger.database('REORDER_FAVORITES', `Reordering ${reorderedFavorites.length} favorites`, tournamentId)
+    logger.database('REORDER_FAVORITES', `Reordering ${reorderedFavorites.length} favorites with optimized approach`, tournamentId)
 
-    // Update each favorite with its new display_order
-    const updatePromises = reorderedFavorites.map(favorite => 
-      supabase
+    // Update each favorite with appropriate order values
+    const updatePromises = reorderedFavorites.map(favorite => {
+      const updateData: any = {
+        updated_at: new Date().toISOString()
+      }
+
+      // Solo actualizar las columnas que se proporcionan
+      if (favorite.display_order !== undefined) {
+        updateData.display_order = favorite.display_order
+      }
+      if (favorite.favorite_display_order !== undefined) {
+        updateData.favorite_display_order = favorite.favorite_display_order
+      }
+
+      return supabase
         .from('favorites')
-        .update({ 
-          display_order: favorite.display_order,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', favorite.id)
         .eq('scout_id', session.user.id)
         .eq('tournament_id', tournamentId)
-    )
+    })
 
     const results = await Promise.all(updatePromises)
     

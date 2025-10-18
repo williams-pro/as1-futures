@@ -4,6 +4,7 @@ import { useMemo, useState, useCallback } from "react"
 import { Player } from "@/lib/types"
 import { useFavorites } from "@/contexts/favorites-context"
 import { useToast } from "@/hooks/use-toast"
+import { reorderFavorites as reorderFavoritesAction } from "@/app/actions/favorites/reorder-favorites"
 
 export function useFavoritesPage() {
   const { toast } = useToast()
@@ -29,8 +30,30 @@ export function useFavoritesPage() {
   const [pendingRegularOrder, setPendingRegularOrder] = useState<Player[]>([])
   const [isSaving, setIsSaving] = useState(false)
 
-  // Transform favorites data to Player objects with team info using data from context
-  const players = useMemo(() => {
+  // Transform exclusives data to Player objects
+  const exclusivePlayers = useMemo(() => {
+    return exclusives
+      .filter(fav => fav.player) // Only include exclusives with player data
+      .map(fav => ({
+        id: fav.player!.id,
+        firstName: fav.player!.first_name,
+        lastName: fav.player!.last_name,
+        jerseyNumber: fav.player!.jersey_number,
+        position: fav.player!.position,
+        teamId: fav.player!.team?.id || '',
+        photoUrl: fav.player!.photo_url || undefined,
+        videoUrl: undefined, // Not available in favorites data
+        birthDate: new Date(2000, 0, 1).toISOString(), // Default value, not available in favorites
+        height: undefined, // Not available in favorites data
+        weight: undefined, // Not available in favorites data
+        nationality: undefined, // Not available in favorites data
+        dominantFoot: undefined, // Not available in favorites data
+        team: fav.player!.team, // Include team information
+      } as Player & { team?: { id: string; name: string; team_code: string; group?: { id: string; name: string; code: string } } }))
+  }, [exclusives])
+
+  // Transform favorites data to Player objects (includes exclusives)
+  const regularFavoritePlayers = useMemo(() => {
     return favorites
       .filter(fav => fav.player) // Only include favorites with player data
       .map(fav => ({
@@ -51,17 +74,12 @@ export function useFavoritesPage() {
       } as Player & { team?: { id: string; name: string; team_code: string; group?: { id: string; name: string; code: string } } }))
   }, [favorites])
 
-  // Separate exclusive and regular favorite players
-  // Exclusives appear in both lists (exclusive and regular favorites)
-  const exclusivePlayers = players.filter(player => isExclusive(player.id))
-  const regularFavoritePlayers = players.filter(player => isFavorite(player.id))
-
   // Use pending orders if available, otherwise use current order
   const displayExclusivePlayers = pendingExclusiveOrder.length > 0 ? pendingExclusiveOrder : exclusivePlayers
   const displayRegularPlayers = pendingRegularOrder.length > 0 ? pendingRegularOrder : regularFavoritePlayers
 
   // Memoized calculations
-  const totalFavorites = players.length
+  const totalFavorites = regularFavoritePlayers.length
   const canAddExclusiveValue = canAddExclusive()
 
   // Handle reordering for exclusive players
@@ -89,40 +107,74 @@ export function useFavoritesPage() {
 
     setIsSaving(true)
     try {
-      // Create a map to track all players and their final order
-      const allPlayers = new Map<string, { player: Player; order: number }>()
-      let currentOrder = 0
-      
-      // Process exclusive players first (they get priority in the final order)
-      displayExclusivePlayers.forEach(player => {
-        allPlayers.set(player.id, { player, order: currentOrder++ })
+      // Preparar actualizaciones para exclusivos (usar display_order)
+      const exclusiveUpdates = displayExclusivePlayers.map((player, index) => {
+        const favorite = favorites.find(fav => fav.playerId === player.id)
+        return {
+          id: favorite!.id,
+          display_order: index
+        }
       })
+
+      // Preparar actualizaciones para favoritos (usar favorite_display_order)
+      const favoriteUpdates = displayRegularPlayers.map((player, index) => {
+        const favorite = favorites.find(fav => fav.playerId === player.id)
+        return {
+          id: favorite!.id,
+          favorite_display_order: index
+        }
+      })
+
+      // Combinar todas las actualizaciones
+      const allUpdates = [...exclusiveUpdates, ...favoriteUpdates]
       
-      // Process regular players, but skip if they're already processed (exclusives)
-      displayRegularPlayers.forEach(player => {
-        if (!allPlayers.has(player.id)) {
-          allPlayers.set(player.id, { player, order: currentOrder++ })
+      // Llamar directamente a la acción de reordenamiento con los datos específicos
+      const result = await reorderFavoritesAction(currentTournamentId, allUpdates)
+      
+      if (!result.success) {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to save order",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Actualizar el estado local con los nuevos órdenes
+      const updatedFavorites = favorites.map(fav => {
+        const exclusiveUpdate = allUpdates.find(update => update.id === fav.id && 'display_order' in update) as { id: string; display_order: number } | undefined
+        const favoriteUpdate = allUpdates.find(update => update.id === fav.id && 'favorite_display_order' in update) as { id: string; favorite_display_order: number } | undefined
+        
+        return {
+          ...fav,
+          order: exclusiveUpdate ? exclusiveUpdate.display_order : fav.order,
+          favoriteOrder: favoriteUpdate ? favoriteUpdate.favorite_display_order : fav.favoriteOrder
+        }
+      })
+
+      const updatedExclusives = exclusives.map(fav => {
+        const exclusiveUpdate = allUpdates.find(update => update.id === fav.id && 'display_order' in update) as { id: string; display_order: number } | undefined
+        const favoriteUpdate = allUpdates.find(update => update.id === fav.id && 'favorite_display_order' in update) as { id: string; favorite_display_order: number } | undefined
+        
+        return {
+          ...fav,
+          order: exclusiveUpdate ? exclusiveUpdate.display_order : fav.order,
+          favoriteOrder: favoriteUpdate ? favoriteUpdate.favorite_display_order : fav.favoriteOrder
         }
       })
       
-      // Convert to array and sort by final order
-      const finalOrderedPlayers = Array.from(allPlayers.values())
-        .sort((a, b) => a.order - b.order)
-        .map(item => item.player)
-      
-      // Map to favorites maintaining the final order
-      const reorderedFavorites = finalOrderedPlayers.map(player => {
-        const favorite = favorites.find(fav => fav.playerId === player.id)
-        return favorite!
-      }).filter(Boolean)
-
-      // Use the context's reorderFavorites function
-      await reorderFavorites(reorderedFavorites)
+      // Recargar datos desde la BD para asegurar sincronización completa
+      await refreshFavorites()
       
       // Clear pending changes
       setPendingExclusiveOrder([])
       setPendingRegularOrder([])
       setHasChanges(false)
+
+      toast({
+        title: "Success",
+        description: "Order saved successfully",
+      })
     } catch (err) {
       toast({
         title: "Error",
@@ -161,7 +213,7 @@ export function useFavoritesPage() {
 
   return {
     // Data
-    players,
+    players: regularFavoritePlayers, // For backward compatibility
     exclusivePlayers,
     regularFavoritePlayers,
     displayExclusivePlayers,

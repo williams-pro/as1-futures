@@ -2,7 +2,7 @@
 
 import { createServerClient } from '@/lib/supabase/server'
 
-export async function getMyFavorites(tournamentId: string) {
+export async function getMyExclusives(tournamentId: string) {
   const supabase = await createServerClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -45,18 +45,18 @@ export async function getMyFavorites(tournamentId: string) {
       `)
       .eq('scout_id', user.id)
       .eq('tournament_id', tournamentId)
-      .eq('is_favorite', true)
-      .order('favorite_display_order', { ascending: true, nullsFirst: false })
+      .eq('is_exclusive', true)
+      .order('display_order', { ascending: true, nullsFirst: false })
 
     if (error) {
-      console.error('[v0] Supabase error getting favorites:', error)
+      console.error('[v0] Supabase error getting exclusives:', error)
       throw error
     }
 
     return { success: true, players: data || [] }
   } catch (error) {
-    console.error('[v0] Error getting favorites:', error)
+    console.error('[v0] Error getting exclusives:', error)
     const errorMessage = error instanceof Error ? error.message : String(error)
-    return { success: false, error: `Failed to get favorites: ${errorMessage}` }
+    return { success: false, error: `Failed to get exclusives: ${errorMessage}` }
   }
 }
