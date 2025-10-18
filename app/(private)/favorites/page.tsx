@@ -79,47 +79,56 @@ export default function FavoritesPage() {
           </p>
         </header>
 
-        {/* Sticky Save Banner */}
+        {/* Sticky Save Banner - Mobile Optimized */}
         {hasChanges && (
           <div 
-            className="sticky top-4 z-10 flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+            className="sticky top-2 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 rounded-lg border border-slate-200 bg-white p-3 sm:p-4 shadow-sm mx-2 sm:mx-0"
             role="banner"
             aria-live="polite"
           >
-            <div className="flex items-center gap-3">
-              <Info className="h-4 w-4 text-slate-600" aria-label={FAVORITES_TEXTS.ALT_TEXTS.INFO_ICON} />
-              <div>
-                <p className="text-sm font-medium text-foreground">{FAVORITES_TEXTS.SAVE_BANNER.TITLE}</p>
-                <p className="text-xs text-muted-foreground">{FAVORITES_TEXTS.SAVE_BANNER.DESCRIPTION}</p>
+            {/* Info Section */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <Info className="h-4 w-4 text-slate-600 flex-shrink-0" aria-label={FAVORITES_TEXTS.ALT_TEXTS.INFO_ICON} />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-foreground truncate">{FAVORITES_TEXTS.SAVE_BANNER.TITLE}</p>
+                <p className="text-xs text-muted-foreground hidden sm:block">{FAVORITES_TEXTS.SAVE_BANNER.DESCRIPTION}</p>
               </div>
             </div>
-            <div className="flex gap-2 px-2 py-1">
+            
+            {/* Action Buttons */}
+            <div className="flex gap-2 w-full sm:w-auto">
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={handleDiscardChanges} 
                 disabled={isSaving}
                 className={cn(
-                  "gap-2 border-slate-300 hover:border-slate-400 px-4 py-2",
-                  "transition-colors duration-200"
+                  "gap-2 border-slate-300 hover:border-slate-400 px-3 sm:px-4 py-2 flex-1 sm:flex-none",
+                  "transition-colors duration-200 text-xs sm:text-sm"
                 )}
                 aria-label={FAVORITES_TEXTS.ALT_TEXTS.DISCARD_ICON}
               >
-                <X className="h-4 w-4" />
-                {FAVORITES_TEXTS.SAVE_BANNER.BUTTONS.DISCARD}
+                <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">{FAVORITES_TEXTS.SAVE_BANNER.BUTTONS.DISCARD}</span>
+                <span className="sm:hidden">Cancel</span>
               </Button>
               <Button 
                 size="sm" 
                 onClick={handleSaveChanges} 
                 disabled={isSaving}
                 className={cn(
-                  "gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2",
-                  "transition-colors duration-200"
+                  "gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3 sm:px-4 py-2 flex-1 sm:flex-none",
+                  "transition-colors duration-200 text-xs sm:text-sm"
                 )}
                 aria-label={FAVORITES_TEXTS.ALT_TEXTS.SAVE_ICON}
               >
-                <Save className="h-4 w-4" />
-                {isSaving ? "Saving..." : FAVORITES_TEXTS.SAVE_BANNER.BUTTONS.SAVE_CHANGES}
+                <Save className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">
+                  {isSaving ? "Saving..." : FAVORITES_TEXTS.SAVE_BANNER.BUTTONS.SAVE_CHANGES}
+                </span>
+                <span className="sm:hidden">
+                  {isSaving ? "Saving..." : "Save"}
+                </span>
               </Button>
             </div>
           </div>
