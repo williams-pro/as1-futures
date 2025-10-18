@@ -311,7 +311,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
           {/* Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             <PlayerInfoCard player={player} team={team || undefined} />
-            <PlayerHighlights videoUrls={[]} />
+            <PlayerHighlights videos={player?.playerVideos} />
           </div>
         </div>
 

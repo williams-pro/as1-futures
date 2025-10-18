@@ -6,22 +6,15 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu'
-import { 
   Trophy, 
   Users, 
   User, 
   Calendar, 
   Plus,
   BarChart3,
-  Settings,
-  Star
+  Settings
 } from 'lucide-react'
-import { Tournament, Team, Player, TournamentGroup } from '@/lib/types/admin.types'
+import { Tournament, Team, Player, TournamentGroup, PlayerVideo } from '@/lib/types/admin.types'
 import { getTournaments } from '@/app/actions/admin/tournaments/get-tournaments'
 import { getTeams } from '@/app/actions/admin/teams/get-teams'
 import { getPlayers } from '@/app/actions/admin/players/get-players'
@@ -100,7 +93,7 @@ export function AdminDashboard({
   const [specialMatches, setSpecialMatches] = useState<SpecialMatchWithTeams[]>(initialSpecialMatches)
   const [loading, setLoading] = useState(false)
   const [editingTeam, setEditingTeam] = useState<Team | null>(null)
-  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
+  const [editingPlayer, setEditingPlayer] = useState<(Player & { player_videos?: PlayerVideo[] }) | null>(null)
   const [creatingPlayer, setCreatingPlayer] = useState(false)
   const [creatingMatch, setCreatingMatch] = useState(false)
   const [creatingScout, setCreatingScout] = useState(false)
@@ -184,8 +177,66 @@ export function AdminDashboard({
     setEditingTeam(team)
   }
 
-  const handleEditPlayer = (player: Player) => {
-    setEditingPlayer(player)
+  const handleEditPlayer = async (player: Player) => {
+    try {
+      setLoading(true)
+      
+      // Importar la acción getPlayerDetails
+      const { getPlayerDetails } = await import('@/app/actions/players/get-player-details')
+      
+      // Obtener datos completos del jugador incluyendo videos
+      const result = await getPlayerDetails(player.id)
+      
+      if (result.success && result.data) {
+        // Mapear los datos de Supabase al formato esperado por PlayerEditForm
+        const playerWithVideos = {
+          id: result.data.id,
+          first_name: result.data.first_name,
+          last_name: result.data.last_name,
+          full_name: `${result.data.first_name} ${result.data.last_name}`,
+          jersey_number: result.data.jersey_number,
+          position: result.data.position as any,
+          dominant_foot: result.data.dominant_foot as any,
+          height_cm: result.data.height_cm,
+          date_of_birth: result.data.date_of_birth,
+          photo_url: result.data.photo_url,
+          tournament_id: result.data.tournament.id,
+          team_id: result.data.team.id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          team: {
+            id: result.data.team.id,
+            name: result.data.team.name,
+            team_code: result.data.team.team_code,
+            logo_url: result.data.team.logo_url,
+            is_as1_team: result.data.team.is_as1_team,
+            tournament_id: result.data.tournament.id,
+            group_id: result.data.team.group.id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          player_videos: result.data.player_videos?.map(video => ({
+            id: video.id,
+            player_id: result.data!.id,
+            video_url: video.video_url,
+            video_type: video.video_type,
+            display_order: video.display_order,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })) || []
+        }
+        setEditingPlayer(playerWithVideos)
+      } else {
+        // Si falla, usar los datos básicos
+        setEditingPlayer(player)
+      }
+    } catch (error) {
+      console.error('Error fetching player details:', error)
+      // Si falla, usar los datos básicos
+      setEditingPlayer(player)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleTeamUpdated = () => {
@@ -214,7 +265,7 @@ export function AdminDashboard({
     setCreatingPlayer(true)
   }
 
-  const handlePlayerCreated = () => {
+  const handlePlayerCreated = (playerId?: string) => {
     setCreatingPlayer(false)
     fetchData()
   }

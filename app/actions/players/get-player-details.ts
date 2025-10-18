@@ -32,6 +32,12 @@ interface PlayerDetails {
     name: string
     year: number
   }
+  player_videos: {
+    id: string
+    video_url: string
+    video_type: string
+    display_order: number
+  }[]
 }
 
 export async function getPlayerDetails(playerId: string): Promise<ApiResponse<PlayerDetails>> {
@@ -40,7 +46,7 @@ export async function getPlayerDetails(playerId: string): Promise<ApiResponse<Pl
     const supabase = await getSupabaseServerClient()
     const user = await validateAuth(supabase, 'GET_PLAYER_DETAILS')
 
-    // 2. Obtener detalles del jugador con información del equipo y torneo
+    // 2. Obtener detalles del jugador con información del equipo, torneo y videos
     const { data: player, error: playerError } = await supabase
       .from('players')
       .select(`
@@ -69,6 +75,12 @@ export async function getPlayerDetails(playerId: string): Promise<ApiResponse<Pl
           id,
           name,
           year
+        ),
+        player_videos(
+          id,
+          video_url,
+          video_type,
+          display_order
         )
       `)
       .eq('id', playerId)
@@ -124,7 +136,8 @@ export async function getPlayerDetails(playerId: string): Promise<ApiResponse<Pl
         id: player.tournament?.id || '',
         name: player.tournament?.name || '',
         year: player.tournament?.year || 0
-      }
+      },
+      player_videos: player.player_videos || []
     }
 
     logger.database('GET_PLAYER_DETAILS', 'Player details fetched successfully', user.id, {

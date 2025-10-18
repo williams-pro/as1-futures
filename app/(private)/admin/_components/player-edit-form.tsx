@@ -11,14 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { DatePicker } from '@/components/ui/date-picker'
-import { Loader2, Upload, X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { updatePlayer } from '@/app/actions/admin/players/update-player'
 import { uploadPlayerPhoto } from '@/app/actions/admin/upload/upload-player-photo'
-import { Player, Team, PlayerPositionType, DominantFootType } from '@/lib/types/admin.types'
+import { Player, Team, PlayerPositionType, DominantFootType, PlayerVideo } from '@/lib/types/admin.types'
 import { PLAYER_POSITIONS, POSITION_DISPLAY_NAMES } from '@/lib/constants/player-positions'
 import { logger } from '@/lib/logger'
-import { formatDateForInput } from '@/lib/utils/date-utils'
+import { PlayerVideosManager } from './player-videos-manager'
 
 const PlayerEditSchema = z.object({
   first_name: z.string().min(2, 'First name must be at least 2 characters'),
@@ -44,7 +44,7 @@ const DOMINANT_FEET: { value: DominantFootType; label: string }[] = [
 ]
 
 interface PlayerEditFormProps {
-  player: Player
+  player: Player & { player_videos?: PlayerVideo[] }
   onSuccess?: () => void
   onCancel?: () => void
 }
@@ -53,6 +53,7 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(player.photo_url || null)
+  const [playerVideos, setPlayerVideos] = useState<PlayerVideo[]>(player.player_videos || [])
   const { toast } = useToast()
 
   // Helper function to ensure date format is YYYY-MM-DD for input
@@ -186,6 +187,7 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
   }
 
   return (
+    <>
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>Edit Player</CardTitle>
@@ -389,5 +391,14 @@ export function PlayerEditForm({ player, onSuccess, onCancel }: PlayerEditFormPr
         </form>
       </CardContent>
     </Card>
+
+    {/* Player Videos Manager */}
+    <PlayerVideosManager
+      playerId={player.id}
+      playerName={`${player.first_name} ${player.last_name}`}
+      initialVideos={playerVideos}
+      onVideosChange={setPlayerVideos}
+    />
+  </>
   )
 }

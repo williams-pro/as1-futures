@@ -18,6 +18,7 @@ export function usePlayerDetail(playerId: string) {
     height: playerDetails.height,
     birthDate: playerDetails.birthDate,
     teamId: playerDetails.teamId,
+    playerVideos: playerDetails.playerVideos,
     stats: undefined
   } : null
 

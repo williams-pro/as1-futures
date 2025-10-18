@@ -2,12 +2,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Video, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-interface PlayerHighlightsProps {
-  videoUrls?: string[]
+interface PlayerVideo {
+  id: string
+  videoUrl: string
+  videoType: string
+  displayOrder: number
 }
 
-export function PlayerHighlights({ videoUrls }: PlayerHighlightsProps) {
-  if (!videoUrls || videoUrls.length === 0) {
+interface PlayerHighlightsProps {
+  videos?: PlayerVideo[]
+}
+
+export function PlayerHighlights({ videos }: PlayerHighlightsProps) {
+  if (!videos || videos.length === 0) {
     return (
       <Card className="border-border bg-white">
         <CardHeader>
@@ -25,21 +32,24 @@ export function PlayerHighlights({ videoUrls }: PlayerHighlightsProps) {
     )
   }
 
+  // Ordenar videos por displayOrder
+  const sortedVideos = [...videos].sort((a, b) => a.displayOrder - b.displayOrder)
+
   return (
     <Card className="border-border bg-white">
       <CardHeader>
         <CardTitle className="text-lg">Highlights</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {videoUrls.map((url, index) => (
-          <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="block">
+        {sortedVideos.map((video, index) => (
+          <a key={video.id} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="block">
             <Button
               variant="outline"
               className="w-full justify-between hover:bg-primary/5 hover:border-primary/50 bg-transparent"
             >
               <span className="flex items-center gap-2">
                 <Video className="h-4 w-4" />
-                Highlight Video {index + 1}
+                {video.videoType === 'highlight' ? 'Highlight' : video.videoType} Video {index + 1}
               </span>
               <ExternalLink className="h-4 w-4" />
             </Button>

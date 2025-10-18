@@ -31,6 +31,12 @@ interface PlayerDetails {
     name: string
     year: number
   }
+  player_videos: {
+    id: string
+    video_url: string
+    video_type: string
+    display_order: number
+  }[]
 }
 
 // Tipo para compatibilidad con componentes existentes
@@ -59,6 +65,12 @@ export interface PlayerDetailData {
     name: string
     year: number
   }
+  playerVideos: {
+    id: string
+    videoUrl: string
+    videoType: string
+    displayOrder: number
+  }[]
 }
 
 export function usePlayerDetailsSupabase(playerId: string) {
@@ -102,7 +114,13 @@ export function usePlayerDetailsSupabase(playerId: string) {
               id: result.data.tournament.id,
               name: result.data.tournament.name,
               year: result.data.tournament.year
-            }
+            },
+            playerVideos: result.data.player_videos?.map(video => ({
+              id: video.id,
+              videoUrl: video.video_url,
+              videoType: video.video_type,
+              displayOrder: video.display_order
+            })) || []
           }
           
           setPlayerDetails(mappedPlayerDetails)

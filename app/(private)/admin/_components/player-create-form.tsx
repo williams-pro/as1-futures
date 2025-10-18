@@ -11,14 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { DatePicker } from '@/components/ui/date-picker'
-import { Loader2, Upload, X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { createPlayer } from '@/app/actions/admin/players/create-player'
 import { uploadPlayerPhoto } from '@/app/actions/admin/upload/upload-player-photo'
-import { Team, PlayerPositionType, DominantFootType } from '@/lib/types/admin.types'
+import { Team, PlayerPositionType, DominantFootType, PlayerVideo } from '@/lib/types/admin.types'
 import { PLAYER_POSITIONS, POSITION_DISPLAY_NAMES } from '@/lib/constants/player-positions'
 import { logger } from '@/lib/logger'
-import { formatDateForInput } from '@/lib/utils/date-utils'
+import { PlayerVideosManager } from './player-videos-manager'
 
 const PlayerCreateSchema = z.object({
   first_name: z.string().min(2, 'First name must be at least 2 characters'),
@@ -46,7 +46,7 @@ const DOMINANT_FEET: { value: DominantFootType; label: string }[] = [
 
 interface PlayerCreateFormProps {
   teams: Team[]
-  onSuccess?: () => void
+  onSuccess?: (playerId: string) => void
   onCancel?: () => void
 }
 
@@ -54,6 +54,8 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [createdPlayerId, setCreatedPlayerId] = useState<string | null>(null)
+  const [playerVideos, setPlayerVideos] = useState<PlayerVideo[]>([])
   const { toast } = useToast()
 
   // Helper function to ensure date format is YYYY-MM-DD for input
@@ -110,7 +112,7 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
 
     setIsUploading(true)
     try {
-      logger.database('PLAYER_CREATE_FORM', 'Uploading player photo', undefined, { fileName: file.name })
+      logger.database('PLAYER_CREATE_FORM', 'Uploading player photo', undefined)
 
       // Crear un ID temporal para la subida
       const tempId = 'temp-' + Date.now()
@@ -130,7 +132,7 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
         throw new Error(result.error || 'Upload failed')
       }
     } catch (error) {
-      logger.error('PLAYER_CREATE_FORM', 'Failed to upload photo', { fileName: file.name }, error)
+      logger.error('Failed to upload photo', { operation: 'PLAYER_CREATE_FORM' }, error as Error)
       toast({
         title: "Error",
         description: "Failed to upload photo",
@@ -155,7 +157,7 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
   const onSubmit = async (data: PlayerCreateFormData) => {
     setIsLoading(true)
     try {
-      logger.database('PLAYER_CREATE_FORM', 'Creating player', undefined, { teamId: data.team_id })
+      logger.database('PLAYER_CREATE_FORM', 'Creating player', undefined)
 
       // Obtener el tournament_id del equipo seleccionado
       const selectedTeam = teams.find(team => team.id === data.team_id)
@@ -179,21 +181,24 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
 
       const result = await createPlayer(formData)
 
-      if (result.success) {
-        logger.database('PLAYER_CREATE_FORM', 'Player created successfully', undefined, { teamId: data.team_id })
+      if (result.success && result.data) {
+        const playerId = (result.data as any).id
+        setCreatedPlayerId(playerId)
+        
+        logger.database('PLAYER_CREATE_FORM', 'Player created successfully', undefined)
         toast({
           title: "Success",
           description: "Player created successfully",
         })
-        onSuccess?.()
+        onSuccess?.(playerId)
       } else {
         throw new Error(result.error || 'Create failed')
       }
     } catch (error) {
-      logger.error('PLAYER_CREATE_FORM', 'Failed to create player', { teamId: data.team_id }, error)
+      logger.error('Failed to create player', { operation: 'PLAYER_CREATE_FORM' }, error as Error)
       toast({
         title: "Error",
-        description: result.error || "Failed to create player",
+        description: "Failed to create player",
         variant: "destructive",
       })
     } finally {
@@ -202,6 +207,7 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
   }
 
   return (
+    <>
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>Create New Player</CardTitle>
@@ -432,5 +438,16 @@ export function PlayerCreateForm({ teams, onSuccess, onCancel }: PlayerCreateFor
         </form>
       </CardContent>
     </Card>
+
+    {/* Player Videos Manager - Solo mostrar después de crear el jugador */}
+    {createdPlayerId && (
+      <PlayerVideosManager
+        playerId={createdPlayerId}
+        playerName={`${watch('first_name')} ${watch('last_name')}`}
+        initialVideos={playerVideos}
+        onVideosChange={setPlayerVideos}
+      />
+    )}
+  </>
   )
 }

@@ -131,6 +131,13 @@ export const PlayerPosition = z.enum([
 
 export const DominantFoot = z.enum(['Left', 'Right', 'Both'])
 
+// Esquema para videos de jugadores
+const PlayerVideoSchema = z.object({
+  video_url: z.string().url('Invalid video URL'),
+  video_type: z.string().min(1, 'Video type is required').default('highlight'),
+  display_order: z.number().int().min(0).default(0),
+})
+
 const BasePlayerSchema = z.object({
   tournament_id: z.string().uuid(),
   team_id: z.string().uuid(),
@@ -148,10 +155,26 @@ export const CreatePlayerSchema = BasePlayerSchema
 
 export const UpdatePlayerSchema = BasePlayerSchema.partial().omit({ tournament_id: true, team_id: true })
 
+// Esquemas para gestión de videos
+export const CreatePlayerVideoSchema = PlayerVideoSchema.omit({ display_order: true })
+export const UpdatePlayerVideoSchema = PlayerVideoSchema.partial()
+
 export type PlayerPositionType = z.infer<typeof PlayerPosition>
 export type DominantFootType = z.infer<typeof DominantFoot>
 export type CreatePlayerData = z.infer<typeof CreatePlayerSchema>
 export type UpdatePlayerData = z.infer<typeof UpdatePlayerSchema>
+export type PlayerVideoData = z.infer<typeof PlayerVideoSchema>
+export type CreatePlayerVideoData = z.infer<typeof CreatePlayerVideoSchema>
+export type UpdatePlayerVideoData = z.infer<typeof UpdatePlayerVideoSchema>
+
+export interface PlayerVideo {
+  id: string
+  player_id: string
+  video_url: string
+  video_type: string
+  display_order: number
+  created_at: string
+}
 
 export interface Player {
   id: string
@@ -166,6 +189,7 @@ export interface Player {
   height_cm: number
   date_of_birth: string
   photo_url?: string
+  player_videos?: PlayerVideo[]
   created_at: string
   updated_at: string
   team?: Team
