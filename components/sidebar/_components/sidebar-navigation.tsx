@@ -27,15 +27,6 @@ export function SidebarNavigation({
             ? favoritesCount 
             : undefined
 
-        // Debug logging
-        if (isFavoritesItem) {
-          console.log('Favorites item found:', {
-            itemName: item.name,
-            favoritesCount,
-            favoritesLoading,
-            badge
-          })
-        }
 
         return (
           <SidebarNavItem

@@ -1,15 +1,17 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
 import {
   DndContext,
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { DraggablePlayerCard } from "./draggable-player-card"
@@ -46,6 +48,7 @@ export function FavoritesSection({
   sectionType = "favorites",
 }: FavoritesSectionProps) {
   const { isFavorite, isExclusive } = useFavorites()
+  const [isDragging, setIsDragging] = React.useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -53,12 +56,23 @@ export function FavoritesSection({
         distance: 8,
       },
     }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 300,
+        tolerance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   )
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setIsDragging(true)
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setIsDragging(false)
     const { active, over } = event
 
     if (over && active.id !== over.id) {
@@ -83,16 +97,22 @@ export function FavoritesSection({
         {players.length > 0 && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground bg-slate-50/50 px-3 py-1.5 rounded-lg border border-slate-200/50 self-start sm:self-auto">
             <Users className="h-3 w-3" />
-            <span>Drag to reorder your {icon === "gem" ? "exclusive" : "favorite"} players</span>
+            <span className="hidden sm:inline">Drag to reorder your {icon === "gem" ? "exclusive" : "favorite"} players</span>
+            <span className="sm:hidden">Touch and hold to reorder</span>
           </div>
         )}
       </div>
 
       {/* Lista de Jugadores */}
       {players.length > 0 ? (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext 
+          sensors={sensors} 
+          collisionDetection={closestCenter} 
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext items={players.map((p) => p.id)} strategy={verticalListSortingStrategy}>
-            <div className="space-y-3">
+            <div className={cn("space-y-3", isDragging && "pointer-events-none")}>
               {players.map((player) => (
                 <DraggablePlayerCard
                   key={player.id}

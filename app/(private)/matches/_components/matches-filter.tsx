@@ -13,7 +13,6 @@ interface MatchesFilterProps {
 export function MatchesFilter({ selectedGroup, onGroupChange, resultCount }: MatchesFilterProps) {
   const { groups, loading } = useTournamentGroups()
   
-  console.log('MatchesFilter - groups:', groups, 'loading:', loading)
 
   if (loading) {
     return (

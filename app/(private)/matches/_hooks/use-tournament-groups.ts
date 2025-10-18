@@ -25,7 +25,6 @@ export function useTournamentGroups() {
         
         const result = await getTournamentGroups()
         
-        console.log('Tournament groups result:', result)
         
         if (result.success && result.groups) {
           setGroups(result.groups)

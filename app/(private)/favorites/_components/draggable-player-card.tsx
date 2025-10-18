@@ -92,10 +92,16 @@ export function DraggablePlayerCard({
 
   return (
     <TooltipProvider>
-      <div ref={setNodeRef} style={style} className={cn(isDragging && "opacity-60 scale-95")}>
+      <div 
+        ref={setNodeRef} 
+        style={style} 
+        className={cn(isDragging && "opacity-60 scale-95")}
+        {...attributes}
+        {...listeners}
+      >
         <Card
           className={cn(
-            "bg-white/50 backdrop-blur-sm border border-border/40 hover:shadow-md transition-all duration-300 rounded-xl",
+            "bg-white/50 backdrop-blur-sm border border-border/40 hover:shadow-md transition-all duration-300 rounded-xl select-none",
             isDragging && "shadow-lg border-as1-gold/40",
             isExclusive && "border-slate-200/50 hover:border-slate-300/50",
           )}
@@ -106,9 +112,7 @@ export function DraggablePlayerCard({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    {...attributes}
-                    {...listeners}
-                    className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0"
+                    className="text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0"
                   >
                     <GripVertical className="h-4 w-4" />
                   </button>
