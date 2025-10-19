@@ -12,7 +12,9 @@ const globalTrackingState = new Map<string, {
   cleanupExecuted: boolean
   videoPlayed: boolean
   statsExpanded: boolean
-  hasScrolled: boolean
+  scrollDepth: number
+  hasScrollableContent: boolean
+  userDidScroll: boolean
   deviceType: 'mobile' | 'tablet' | 'desktop'
   startTime: number | null
 }>()
@@ -25,7 +27,9 @@ function getGlobalState(playerId: string) {
       cleanupExecuted: false,
       videoPlayed: false,
       statsExpanded: false,
-      hasScrolled: false,
+      scrollDepth: 0,
+      hasScrollableContent: false,
+      userDidScroll: false,
       deviceType: detectDeviceTypeClient(),
       startTime: null
     })
@@ -50,6 +54,7 @@ interface UsePlayerTrackingOptions {
   playerId: string
   enabled?: boolean
   minDurationSeconds?: number
+  scrollContainerRef?: React.RefObject<HTMLDivElement | null>
 }
 
 interface UsePlayerTrackingReturn {
@@ -62,7 +67,8 @@ interface UsePlayerTrackingReturn {
 export function usePlayerTracking({
   playerId,
   enabled = true,
-  minDurationSeconds = 3
+  minDurationSeconds = 3,
+  scrollContainerRef
 }: UsePlayerTrackingOptions): UsePlayerTrackingReturn {
   const { tournamentId, sessionId, userId } = useAppContext()
   const [isTracking, setIsTracking] = useState(false)
@@ -125,16 +131,13 @@ export function usePlayerTracking({
     globalState.isSaving = true
     hasTrackedRef.current = true
     isSavingRef.current = true
-
-    const currentGlobalState = getGlobalState(playerId)
-    
     const trackingData: PlayerTrackingData = {
       playerId,
       startTime: startTimeRef.current,
-      hasScrolled: currentGlobalState.hasScrolled,
-      videoPlayed: currentGlobalState.videoPlayed,
-      statsExpanded: currentGlobalState.statsExpanded,
-      deviceType: currentGlobalState.deviceType
+      hasScrolled: globalState.userDidScroll,
+      videoPlayed: globalState.videoPlayed,
+      statsExpanded: globalState.statsExpanded,
+      deviceType: globalState.deviceType
     }
 
     setTrackingData(trackingData)
@@ -145,11 +148,14 @@ export function usePlayerTracking({
         tournamentId: currentTournamentId,
         sessionId: currentSessionId,
         durationSeconds,
-        hasScrolled: currentGlobalState.hasScrolled,
-        videoPlayed: currentGlobalState.videoPlayed,
-        statsExpanded: currentGlobalState.statsExpanded,
-        deviceType: currentGlobalState.deviceType
+        scrollDepthPercentage: globalState.scrollDepth,
+        hasScrollableContent: globalState.hasScrollableContent,
+        userDidScroll: globalState.userDidScroll,
+        videoPlayed: globalState.videoPlayed,
+        statsExpanded: globalState.statsExpanded,
+        deviceType: globalState.deviceType
       }
+
 
       const result = await trackPlayerView(trackingPayload)
 
@@ -181,20 +187,51 @@ export function usePlayerTracking({
   useEffect(() => {
     if (!isTracking) return
 
+    const container = scrollContainerRef?.current || window
+
     const handleScroll = () => {
-      if (!hasScrolledRef.current && (window.scrollY > 0 || document.documentElement.scrollTop > 0)) {
+      const scrollY = container === window ? window.scrollY : (container as HTMLElement).scrollTop
+      const scrollHeight = container === window ? document.documentElement.scrollHeight : (container as HTMLElement).scrollHeight
+      const clientHeight = container === window ? window.innerHeight : (container as HTMLElement).clientHeight
+      
+      const maxScroll = scrollHeight - clientHeight
+      
+      let scrollDepth = 0
+      if (maxScroll > 0) {
+        scrollDepth = Math.min(100, Math.max(0, Math.round((scrollY / maxScroll) * 100)))
+      }
+      
+      const hasScrollableContent = scrollHeight > clientHeight
+      const userScrolled = scrollY > 0
+
+      const globalState = getGlobalState(playerId)
+      
+      // Mantener el scroll depth más alto alcanzado
+      if (scrollDepth > globalState.scrollDepth) {
+        globalState.scrollDepth = scrollDepth
+      }
+      
+      // Mantener hasScrollableContent (se actualiza solo si cambia a true)
+      if (hasScrollableContent) {
+        globalState.hasScrollableContent = hasScrollableContent
+      }
+      
+      // Una vez que el usuario hace scroll, mantenerlo en true
+      if (userScrolled) {
+        globalState.userDidScroll = true
+      }
+
+      if (!hasScrolledRef.current && userScrolled) {
         hasScrolledRef.current = true
-        const globalState = getGlobalState(playerId)
-        globalState.hasScrolled = true
       }
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
+    container.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      container.removeEventListener('scroll', handleScroll)
     }
-  }, [isTracking, playerId])
+  }, [isTracking, playerId, scrollContainerRef])
 
   useEffect(() => {
     return () => {
@@ -226,7 +263,9 @@ export function usePlayerTracking({
       const globalState = getGlobalState(playerId)
       globalState.videoPlayed = false
       globalState.statsExpanded = false
-      globalState.hasScrolled = false
+      globalState.scrollDepth = 0
+      globalState.hasScrollableContent = false
+      globalState.userDidScroll = false
       globalState.deviceType = deviceTypeRef.current
       globalState.startTime = startTimeRef.current
 

@@ -9,7 +9,9 @@ const TrackPlayerViewSchema = z.object({
   tournamentId: z.string().uuid(),
   sessionId: z.string(),
   durationSeconds: z.number().int().min(0).optional(),
-  hasScrolled: z.boolean().default(false),
+  scrollDepthPercentage: z.number().int().min(0).max(100).default(0),
+  hasScrollableContent: z.boolean().default(false),
+  userDidScroll: z.boolean().default(false),
   videoPlayed: z.boolean().default(false),
   statsExpanded: z.boolean().default(false),
   deviceType: z.enum(['mobile', 'tablet', 'desktop']).default('desktop')
@@ -43,7 +45,9 @@ export async function trackPlayerView(data: unknown) {
           tournamentId,
           sessionId,
           durationSeconds,
-          hasScrolled,
+          scrollDepthPercentage,
+          hasScrollableContent,
+          userDidScroll,
           videoPlayed,
           statsExpanded,
           deviceType
@@ -58,7 +62,9 @@ export async function trackPlayerView(data: unknown) {
             tournament_id: tournamentId,
             session_id: sessionId,
             duration_seconds: durationSeconds,
-            scroll_depth_percentage: hasScrolled ? 100 : 0,
+            scroll_depth_percentage: scrollDepthPercentage,
+            has_scrollable_content: hasScrollableContent,
+            user_did_scroll: userDidScroll,
             video_played: videoPlayed,
             stats_expanded: statsExpanded,
             device_type: deviceType
@@ -80,7 +86,9 @@ export async function trackPlayerView(data: unknown) {
                 tournament_id: tournamentId,
                 session_id: sessionId,
                 duration_seconds: durationSeconds,
-                scroll_depth_percentage: hasScrolled ? 100 : 0,
+                scroll_depth_percentage: scrollDepthPercentage,
+                has_scrollable_content: hasScrollableContent,
+                user_did_scroll: userDidScroll,
                 video_played: videoPlayed,
                 stats_expanded: statsExpanded,
                 device_type: deviceType

@@ -42,7 +42,7 @@ export function PrivateLayoutWrapper({ children }: PrivateLayoutWrapperProps) {
     <div className="flex h-screen w-full  overflow-hidden">
       <AppSidebar />
       
-      <SidebarInset className="flex-1 overflow-y-auto">
+      <SidebarInset className="flex-1 overflow-hidden">
         {/* Header solo para mobile */}
         <header className="md:hidden flex h-16 shrink-0 items-center gap-2 border-b border-border px-4">
           <Button
@@ -56,7 +56,7 @@ export function PrivateLayoutWrapper({ children }: PrivateLayoutWrapperProps) {
         </header>
         
         {/* Contenido principal */}
-        <main className="flex-1 p-2 xs:p-2 sm:p-8">
+        <main className="flex-1 p-2 xs:p-2 sm:p-8 overflow-y-auto">
           {children}
         </main>
       </SidebarInset>

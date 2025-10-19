@@ -1,6 +1,6 @@
 "use client"
 
-import { use } from "react"
+import { use, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -26,6 +26,7 @@ interface PlayerDetailPageProps {
 
 export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
   const { playerId } = use(params)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const {
     player,
     team,
@@ -49,13 +50,14 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
   // Inicializar tracking de jugador
   const { markVideoPlayed } = usePlayerTracking({
     playerId,
-    enabled: !loading && !error && !!player,
-    minDurationSeconds: 3
+    enabled: !loading && !isLoading && !error && !!player,
+    minDurationSeconds: 3,
+    scrollContainerRef
   })
 
   if (loading) {
     return (
-      <div className="space-y-8">
+      <div className="h-full flex flex-col space-y-8">
         {/* Header Navigation Skeleton */}
         <div>
           <Skeleton className="h-10 w-48" />
@@ -92,10 +94,12 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
         {/* Divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
 
-        {/* Content Grid Skeleton */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          <Skeleton className="h-64 w-full" />
-          <Skeleton className="h-64 w-full" />
+        {/* Content Container Skeleton */}
+        <div className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-4 min-h-0">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </div>
         </div>
       </div>
     )
@@ -103,7 +107,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
   if (error) {
     return (
-      <div className="space-y-8">
+      <div className="h-full flex flex-col space-y-8">
         {/* Header Navigation */}
         <div>
           <Link href="/teams">
@@ -133,7 +137,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="space-y-8">
+      <div className="h-full flex flex-col space-y-8">
           {/* Header Navigation */}
           <div>
             {team ? (
@@ -316,10 +320,12 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
           {/* Divider */}
           <div className="h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
 
-          {/* Content Grid */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            <PlayerInfoCard player={player} team={team || undefined} />
-            <PlayerHighlights videos={player?.playerVideos} onVideoPlayed={markVideoPlayed} />
+          {/* Content Container */}
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-4 min-h-0">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <PlayerInfoCard player={player} team={team || undefined} />
+              <PlayerHighlights videos={player?.playerVideos} onVideoPlayed={markVideoPlayed} />
+            </div>
           </div>
         </div>
 
