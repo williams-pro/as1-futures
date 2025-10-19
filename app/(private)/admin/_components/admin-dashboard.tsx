@@ -431,14 +431,14 @@ export function AdminDashboard({
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="tournaments" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="tournaments" className="cursor-pointer">Tournaments</TabsTrigger>
-          <TabsTrigger value="teams" className="cursor-pointer">Teams</TabsTrigger>
-          <TabsTrigger value="players" className="cursor-pointer">Players</TabsTrigger>
-          <TabsTrigger value="matches" className="cursor-pointer">Matches</TabsTrigger>
-          <TabsTrigger value="special-matches" className="cursor-pointer">Special Matches</TabsTrigger>
-          <TabsTrigger value="scouts" className="cursor-pointer">Scouts</TabsTrigger>
-          <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+        <TabsList className="flex flex-wrap h-auto p-1 gap-1 sm:flex-nowrap sm:h-9">
+          <TabsTrigger value="tournaments" className="cursor-pointer flex-1 sm:flex-none text-xs sm:text-sm">Tournaments</TabsTrigger>
+          <TabsTrigger value="teams" className="cursor-pointer flex-1 sm:flex-none text-xs sm:text-sm">Teams</TabsTrigger>
+          <TabsTrigger value="players" className="cursor-pointer flex-1 sm:flex-none text-xs sm:text-sm">Players</TabsTrigger>
+          <TabsTrigger value="matches" className="cursor-pointer flex-1 sm:flex-none text-xs sm:text-sm">Matches</TabsTrigger>
+          <TabsTrigger value="special-matches" className="cursor-pointer flex-1 sm:flex-none text-xs sm:text-sm">Special</TabsTrigger>
+          <TabsTrigger value="scouts" className="cursor-pointer flex-1 sm:flex-none text-xs sm:text-sm">Scouts</TabsTrigger>
+          <TabsTrigger value="settings" className="cursor-pointer flex-1 sm:flex-none text-xs sm:text-sm">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tournaments" className="space-y-4">

@@ -57,37 +57,42 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="h-full flex flex-col space-y-8">
-        {/* Header Navigation Skeleton */}
-        <div>
-          <Skeleton className="h-10 w-48" />
-        </div>
+      <div className="h-full flex flex-col">
+        {/* Header Section Skeleton - Auto height */}
+        <div className="h-auto flex flex-col space-y-4 lg:space-y-8 bg-gradient-to-b from-slate-50/50 to-transparent lg:bg-transparent rounded-b-2xl lg:rounded-none p-4 lg:p-0">
+          {/* Header Navigation Skeleton */}
+          <div>
+            <Skeleton className="h-10 w-48" />
+          </div>
 
-        {/* Player Header Skeleton */}
-        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Player Header Skeleton */}
+          <div className="flex items-start gap-3 lg:gap-8 flex-1">
           {/* Player Avatar Skeleton */}
           <div className="flex-shrink-0">
-            <Skeleton className="h-40 w-40 rounded-2xl" />
+            <Skeleton className="h-20 w-20 sm:h-24 sm:w-24 lg:h-40 lg:w-40 rounded-xl lg:rounded-2xl" />
           </div>
 
           {/* Player Info Skeleton */}
-          <div className="flex-1 space-y-6">
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
+          <div className="flex-1 space-y-1.5 lg:space-y-4">
+            <div className="space-y-1.5 lg:space-y-4">
+              <div className="flex flex-wrap items-start gap-1.5 lg:gap-2">
                 <Skeleton className="h-6 w-16" />
                 <Skeleton className="h-6 w-20" />
               </div>
-              <Skeleton className="h-12 w-64" />
+              <Skeleton className="h-4 sm:h-5 lg:h-12 w-32 sm:w-40 lg:w-64" />
             </div>
 
-            {/* Team Info Skeleton */}
-            <Skeleton className="h-16 w-48" />
+            {/* Team Info Skeleton - Desktop Only */}
+            <div className="hidden lg:flex">
+              <Skeleton className="h-16 w-48" />
+            </div>
 
             {/* Action Buttons Skeleton */}
-            <div className="flex gap-3 pt-4">
-              <Skeleton className="h-11 w-32" />
-              <Skeleton className="h-11 w-32" />
+            <div className="flex gap-2 lg:gap-3 pt-1.5 lg:pt-4">
+              <Skeleton className="h-8 w-16 lg:h-11 lg:w-32" />
+              <Skeleton className="h-8 w-16 lg:h-11 lg:w-32" />
             </div>
+          </div>
           </div>
         </div>
 
@@ -95,8 +100,8 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
         <div className="h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
 
         {/* Content Container Skeleton */}
-        <div className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-4 min-h-0">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-3 sm:p-4 min-h-0">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-64 w-full" />
           </div>
@@ -137,32 +142,46 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="h-full flex flex-col space-y-8">
-          {/* Header Navigation */}
-          <div>
-            {team ? (
-              <Link href={`/teams/${team.id}`}>
-                <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                  <ArrowLeft className="h-4 w-4" />
-                  {PLAYER_DETAIL_TEXTS.UI.BACK_TO_TEAM} {team.name}
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/teams">
-                <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                  <ArrowLeft className="h-4 w-4" />
-                  {PLAYER_DETAIL_TEXTS.UI.BACK_TO_TEAMS}
-                </Button>
-              </Link>
-            )}
-          </div>
+      <div className="h-full flex flex-col">
+          {/* Header Section - Auto height */}
+          <div className="h-auto flex flex-col space-y-3 lg:space-y-8 bg-gradient-to-b from-slate-50/50 to-transparent lg:bg-transparent rounded-b-2xl lg:rounded-none p-4 lg:p-0">
+            {/* Header Navigation - Compact */}
+            <div className="flex items-center justify-between">
+              {team ? (
+                <Link href={`/teams/${team.id}`}>
+                  <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground transition-colors h-8 px-2">
+                    <ArrowLeft className="h-3 w-3" />
+                    <span className="hidden sm:inline">{PLAYER_DETAIL_TEXTS.UI.BACK_TO_TEAM}</span>
+                    <span className="sm:hidden">Back</span>
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/teams">
+                  <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground transition-colors h-8 px-2">
+                    <ArrowLeft className="h-3 w-3" />
+                    <span className="hidden sm:inline">{PLAYER_DETAIL_TEXTS.UI.BACK_TO_TEAMS}</span>
+                    <span className="sm:hidden">Back</span>
+                  </Button>
+                </Link>
+              )}
+              
+              {/* Team Badge - Mobile Only, Top Right */}
+              {team && (
+                <Link href={`/teams/${team.id}`} className="lg:hidden">
+                  <Badge variant="outline" className="text-xs h-7 px-3 bg-white/80 backdrop-blur-sm border-slate-200 hover:border-slate-300 hover:bg-white transition-all duration-200 shadow-sm">
+                    <Shield className="h-3 w-3 mr-1.5 text-slate-600" />
+                    <span className="font-medium text-slate-700">{team.name}</span>
+                  </Badge>
+                </Link>
+              )}
+            </div>
 
-          {/* Player Header */}
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Player Avatar */}
+            {/* Player Header - Two Column Layout */}
+            <div className="flex items-start gap-3 lg:gap-8 flex-1">
+            {/* Player Avatar - Left Column */}
             <div className="flex-shrink-0">
-              <div className="h-40 w-40 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 border border-border/30 shadow-sm overflow-hidden">
-                <Avatar className="h-full w-full rounded-2xl border-0">
+              <div className="h-20 w-20 sm:h-24 sm:w-24 lg:h-40 lg:w-40 rounded-xl lg:rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-white shadow-lg ring-1 ring-black/5 overflow-hidden">
+                <Avatar className="h-full w-full rounded-xl lg:rounded-2xl border-0">
                   {player.photoUrl ? (
                     <AvatarImage
                       src={player.photoUrl || "/placeholder.svg"}
@@ -170,7 +189,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                       className="object-cover"
                     />
                   ) : (
-                    <AvatarFallback className="bg-transparent text-slate-700 text-4xl font-bold rounded-2xl">
+                    <AvatarFallback className="bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 text-lg sm:text-xl lg:text-4xl font-bold rounded-xl lg:rounded-2xl">
                       {initials}
                     </AvatarFallback>
                   )}
@@ -178,39 +197,39 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
               </div>
             </div>
 
-            {/* Player Info */}
-            <div className="flex-1 space-y-6">
-              {/* Badges y Nombre */}
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge className="bg-slate-100 text-slate-700 font-mono text-sm border-0">
+            {/* Player Info - Right Column */}
+            <div className="flex-1 min-w-0 text-left">
+              {/* Badges y Nombre - Inline */}
+              <div className="space-y-1.5 lg:space-y-4">
+                <div className="flex flex-wrap items-start gap-1.5 lg:gap-2">
+                  <Badge className="bg-slate-100 text-slate-700 font-mono text-xs lg:text-sm border-0 h-6 lg:h-6 px-2.5 shadow-sm">
                     {PLAYER_DETAIL_TEXTS.UI.JERSEY_PREFIX}{player.jerseyNumber}
                   </Badge>
-                  <Badge variant="secondary" className="text-slate-600">
+                  <Badge variant="secondary" className="text-slate-600 text-xs lg:text-sm h-6 lg:h-6 px-2.5 shadow-sm border-0">
                     {player.position}
                   </Badge>
                   {playerIsFavorite && (
-                    <Badge className="bg-amber-100 text-amber-700 gap-1.5 border-0">
-                      <Star className="h-3 w-3 fill-amber-500" />
+                    <Badge className="bg-amber-100 text-amber-700 gap-1 border-0 text-xs lg:text-sm h-6 lg:h-6 px-2.5 shadow-sm hidden lg:flex">
+                      <Star className="h-2.5 w-2.5 lg:h-3 lg:w-3 fill-amber-500" />
                       {PLAYER_DETAIL_TEXTS.UI.FAVORITE_BADGE}
                     </Badge>
                   )}
                   {playerIsExclusive && (
-                    <Badge className="bg-as1-purple-100 text-as1-purple-700 gap-1.5 border-0">
-                      <Gem className="h-3 w-3" />
+                    <Badge className="bg-as1-purple-100 text-as1-purple-700 gap-1 border-0 text-xs lg:text-sm h-6 lg:h-6 px-2.5 shadow-sm hidden lg:flex">
+                      <Gem className="h-2.5 w-2.5 lg:h-3 lg:w-3" />
                       {PLAYER_DETAIL_TEXTS.UI.EXCLUSIVE_BADGE}
                     </Badge>
                   )}
                 </div>
 
-                <h1 className="text-4xl font-semibold text-foreground tracking-tight text-balance">
+                <h1 className="text-base sm:text-lg lg:text-4xl font-semibold text-foreground tracking-tight text-balance lg:whitespace-normal leading-tight">
                   {player.firstName} <span className="font-semibold">{player.lastName}</span>
                 </h1>
               </div>
 
-              {/* Team Info */}
+              {/* Team Info - Desktop Only */}
               {team && (
-                <Link href={`/teams/${team.id}`}>
+                <Link href={`/teams/${team.id}`} className="hidden lg:block">
                   <div className="inline-flex items-center gap-3 p-3 rounded-xl bg-slate-50/50 border border-border/20 hover:border-as1-gold/30 hover:bg-slate-50 transition-all duration-300 group">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 border border-border/30 flex items-center justify-center">
                       <Shield className="h-5 w-5 text-slate-600" />
@@ -228,8 +247,8 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                 </Link>
               )}
 
-              {/* Action Buttons with Tooltips */}
-              <div className="flex flex-wrap gap-3 pt-4">
+              {/* Action Buttons with Tooltips - Compact */}
+              <div className="flex gap-2 lg:gap-3 pt-1.5 lg:pt-4">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -242,7 +261,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                           handleFavoriteClick(e)
                         }}
                         className={cn(
-                          "gap-2 h-11 px-6 rounded-xl transition-all duration-300 flex items-center relative",
+                          "gap-1 lg:gap-2 h-9 w-20 lg:h-11 lg:w-auto px-4 lg:px-6 rounded-lg lg:rounded-xl transition-all duration-300 flex items-center justify-center relative text-xs lg:text-sm font-medium shadow-sm",
                           playerIsFavorite
                             ? "bg-amber-100 hover:bg-amber-200 text-amber-700 hover:text-amber-800 border border-amber-200 hover:border-amber-300"
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200",
@@ -250,11 +269,16 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                         )}
                       >
                         {isLoading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" />
                         ) : (
                           <>
-                            {playerIsFavorite ? PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.ADD}
-                            <Star className={cn("h-4 w-4", playerIsFavorite && "fill-current")} />
+                            <span className="hidden lg:inline">
+                              {playerIsFavorite ? PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.FAVORITE.ADD}
+                            </span>
+                            <span className="lg:hidden">
+                              {playerIsFavorite ? "Remove" : "Add"}
+                            </span>
+                            <Star className={cn("h-3 w-3 lg:h-4 lg:w-4", playerIsFavorite && "fill-current")} />
                           </>
                         )}
                       </Button>
@@ -282,7 +306,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                           handleExclusiveClick(e)
                         }}
                         className={cn(
-                          "gap-2 h-11 px-6 rounded-xl transition-all duration-300 relative",
+                          "gap-1 lg:gap-2 h-9 w-20 lg:h-11 lg:w-auto px-4 lg:px-6 rounded-lg lg:rounded-xl transition-all duration-300 relative text-xs lg:text-sm font-medium shadow-sm flex items-center justify-center",
                           playerIsExclusive
                             ? "bg-as1-purple-100 hover:bg-as1-purple-200 text-as1-purple-700 hover:text-as1-purple-800 border border-as1-purple-200 hover:border-as1-purple-300"
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200",
@@ -290,12 +314,17 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                         )}
                       >
                         {isLoading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" />
                         ) : (
                           <>
-                            {playerIsExclusive ? PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.ADD}
+                            <span className="hidden lg:inline">
+                              {playerIsExclusive ? PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.REMOVE : PLAYER_DETAIL_TEXTS.BUTTONS.EXCLUSIVE.ADD}
+                            </span>
+                            <span className="lg:hidden">
+                              {playerIsExclusive ? "Remove" : "Add"}
+                            </span>
                             <Gem 
-                              className="h-4 w-4" 
+                              className="h-3 w-3 lg:h-4 lg:w-4" 
                               strokeWidth={2.5}
                               color={playerIsExclusive ? "currentColor" : "#6b7280"}
                             />
@@ -316,13 +345,14 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
                 </div>
             </div>
           </div>
+          </div>
 
           {/* Divider */}
           <div className="h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
 
           {/* Content Container */}
-          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-4 min-h-0">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-3 sm:p-4 min-h-0">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               <PlayerInfoCard player={player} team={team || undefined} />
               <PlayerHighlights videos={player?.playerVideos} onVideoPlayed={markVideoPlayed} />
             </div>
