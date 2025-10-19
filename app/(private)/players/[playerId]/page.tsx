@@ -14,6 +14,7 @@ import { PlayerInfoCard } from "./_components/player-info"
 import { PlayerHighlights } from "./_components/player-highlights"
 import { ConfirmDialog } from "./_components/confirm-dialog"
 import { usePlayerDetail } from "./_hooks/use-player-detail"
+import { usePlayerTracking } from "@/hooks/use-player-tracking"
 import { cn } from "@/lib/utils"
 import { PLAYER_DETAIL_TEXTS } from "./_constants/player-detail"
 
@@ -44,6 +45,13 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
     confirmRemoveFavorite,
     confirmRemoveExclusive,
   } = usePlayerDetail(playerId)
+
+  // Inicializar tracking de jugador
+  const { markVideoPlayed } = usePlayerTracking({
+    playerId,
+    enabled: !loading && !error && !!player,
+    minDurationSeconds: 3
+  })
 
   if (loading) {
     return (
@@ -311,7 +319,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
           {/* Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             <PlayerInfoCard player={player} team={team || undefined} />
-            <PlayerHighlights videos={player?.playerVideos} />
+            <PlayerHighlights videos={player?.playerVideos} onVideoPlayed={markVideoPlayed} />
           </div>
         </div>
 

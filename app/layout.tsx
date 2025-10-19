@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SidebarProvider as CustomSidebarProvider } from "@/contexts/sidebar-context"
 import { SidebarProvider as ShadcnSidebarProvider } from "@/components/ui/sidebar"
+import { AppProvider } from "@/contexts/app-context"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 import { Suspense } from "react"
@@ -35,9 +36,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased">
         <Suspense fallback={<div>Loading...</div>}>
-          <CustomSidebarProvider>
-            {children}
-          </CustomSidebarProvider>
+          <AppProvider>
+            <CustomSidebarProvider>
+              {children}
+            </CustomSidebarProvider>
+          </AppProvider>
         </Suspense>
         <Toaster />
         <Analytics />

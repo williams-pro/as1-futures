@@ -11,9 +11,10 @@ interface PlayerVideo {
 
 interface PlayerHighlightsProps {
   videos?: PlayerVideo[]
+  onVideoPlayed?: () => void
 }
 
-export function PlayerHighlights({ videos }: PlayerHighlightsProps) {
+export function PlayerHighlights({ videos, onVideoPlayed }: PlayerHighlightsProps) {
   if (!videos || videos.length === 0) {
     return (
       <Card className="border-border bg-white">
@@ -42,7 +43,14 @@ export function PlayerHighlights({ videos }: PlayerHighlightsProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         {sortedVideos.map((video, index) => (
-          <a key={video.id} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="block">
+          <a 
+            key={video.id} 
+            href={video.videoUrl} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="block"
+            onClick={() => onVideoPlayed?.()}
+          >
             <Button
               variant="outline"
               className="w-full justify-between hover:bg-primary/5 hover:border-primary/50 bg-transparent"

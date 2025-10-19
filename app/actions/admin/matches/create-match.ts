@@ -110,15 +110,10 @@ export async function createMatch(formData: FormData): Promise<ApiResponse<{ id:
 
     if (matchError) {
       logger.databaseError('CREATE_MATCH', 'Failed to create match', user.id, matchError)
-      return createErrorResponseFromSupabase(matchError, 'CREATE_MATCH')
+      return createErrorResponseFromSupabase(matchError, 'CREATE_MATCH') as ApiResponse<{ id: string; match_code: string }>
     }
 
-    logger.database('CREATE_MATCH', 'Match created successfully', user.id, {
-      matchId: match.id,
-      matchCode: match.match_code,
-      tournamentId: match.tournament_id,
-      groupId: match.group_id
-    })
+    logger.database('CREATE_MATCH', 'Match created successfully', user.id)
 
     // 6. Revalidar cache
     revalidatePath('/admin')
@@ -133,11 +128,11 @@ export async function createMatch(formData: FormData): Promise<ApiResponse<{ id:
         success: false,
         error: 'Validation error',
         data: undefined,
-        errors: error.flatten().fieldErrors
+        errors: error.flatten().fieldErrors as Record<string, string[]>
       }
     }
     
-    logger.error('CREATE_MATCH', 'Unexpected error', { operation: 'CREATE_MATCH' }, error)
-    return createErrorResponseFromSupabase(error, 'CREATE_MATCH')
+    logger.error('Unexpected error', { operation: 'CREATE_MATCH' }, error instanceof Error ? error : undefined)
+    return createErrorResponseFromSupabase(error, 'CREATE_MATCH') as ApiResponse<{ id: string; match_code: string }>
   }
 }
