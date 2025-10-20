@@ -3,6 +3,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { getNextDisplayOrders } from '@/app/(private)/favorites/_utils'
 
 const ToggleExclusiveSchema = z.object({
   playerId: z.string().uuid(),
@@ -50,6 +51,9 @@ export async function toggleExclusive(formData: FormData) {
         }
       }
 
+      // Get the next available display orders for both exclusive and favorite
+      const { nextExclusiveOrder, nextFavoriteOrder } = await getNextDisplayOrders(user.id, tournamentId)
+
       const { error } = await supabase
         .from('favorites')
         .upsert({
@@ -57,7 +61,9 @@ export async function toggleExclusive(formData: FormData) {
           player_id: playerId,
           tournament_id: tournamentId,
           is_favorite: true,
-          is_exclusive: true
+          is_exclusive: true,
+          display_order: nextExclusiveOrder,
+          favorite_display_order: nextFavoriteOrder
         }, {
           onConflict: 'scout_id,player_id,tournament_id'
         })

@@ -3,6 +3,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { getNextDisplayOrder } from '@/app/(private)/favorites/_utils'
 
 const ToggleFavoriteSchema = z.object({
   playerId: z.string().uuid(),
@@ -36,6 +37,9 @@ export async function toggleFavorite(formData: FormData) {
 
   try {
     if (isFavorite) {
+      // Get the next available favorite display order
+      const nextFavoriteOrder = await getNextDisplayOrder(user.id, tournamentId, 'favorite')
+      
       const { error } = await supabase
         .from('favorites')
         .insert({
@@ -43,7 +47,8 @@ export async function toggleFavorite(formData: FormData) {
           player_id: playerId,
           tournament_id: tournamentId,
           is_favorite: true,
-          is_exclusive: false
+          is_exclusive: false,
+          favorite_display_order: nextFavoriteOrder
         })
 
       if (error) throw error
