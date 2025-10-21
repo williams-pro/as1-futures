@@ -57,7 +57,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col overflow-y-auto">
         {/* Header Section Skeleton - Auto height */}
         <div className="h-auto flex flex-col space-y-4 lg:space-y-8 bg-gradient-to-b from-slate-50/50 to-transparent lg:bg-transparent rounded-b-2xl lg:rounded-none p-4 lg:p-0">
           {/* Header Navigation Skeleton */}
@@ -100,7 +100,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
         <div className="h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
 
         {/* Content Container Skeleton */}
-        <div className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-3 sm:p-4 min-h-0">
+        <div className="flex-1 border border-border/20 rounded-lg p-3 sm:p-4">
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-64 w-full" />
@@ -112,7 +112,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
   if (error) {
     return (
-      <div className="h-full flex flex-col space-y-8">
+      <div className="h-full flex flex-col space-y-8 overflow-y-auto">
         {/* Header Navigation */}
         <div>
           <Link href="/teams">
@@ -142,7 +142,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="h-full flex flex-col">
+      <div ref={scrollContainerRef} className="h-full flex flex-col overflow-y-auto">
           {/* Header Section - Auto height */}
           <div className="h-auto flex flex-col space-y-3 lg:space-y-8 bg-gradient-to-b from-slate-50/50 to-transparent lg:bg-transparent rounded-b-2xl lg:rounded-none p-4 lg:p-0">
             {/* Header Navigation - Compact */}
@@ -351,7 +351,7 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
           <div className="h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
 
           {/* Content Container */}
-          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto border border-border/20 rounded-lg p-3 sm:p-4 min-h-0">
+          <div className="flex-1 border border-border/20 rounded-lg p-3 sm:p-4">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               <PlayerInfoCard player={player} team={team || undefined} />
               <PlayerHighlights videos={player?.playerVideos} onVideoPlayed={markVideoPlayed} />
