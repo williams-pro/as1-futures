@@ -9,7 +9,10 @@ import {
   Move, 
   Circle, 
   Swords, 
-  BarChart3 
+  BarChart3,
+  Sword,
+  Goal,
+  Flag
 } from "lucide-react"
 import { getCategoryIcon, getCategoryIconColor } from "@/lib/utils/stat-formatters"
 import { cn } from "@/lib/utils"
@@ -32,7 +35,10 @@ const iconMap = {
   'Move': Move,
   'Circle': Circle,
   'Swords': Swords,
-  'BarChart3': BarChart3
+  'BarChart3': BarChart3,
+  'Sword': Sword, // Para ATTACKING
+  'Goal': Goal, // Para GOALKEEPING
+  'Flag': Flag // Para SET PIECES
 } as const
 
 export function CategoryIcon({ 

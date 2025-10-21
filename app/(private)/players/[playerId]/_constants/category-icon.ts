@@ -10,7 +10,10 @@ export const CATEGORY_ICON_CONSTANTS = {
     'Move': 'Move',
     'Circle': 'Circle',
     'Swords': 'Swords',
-    'BarChart3': 'BarChart3'
+    'BarChart3': 'BarChart3',
+    'Sword': 'Sword', // Para ATTACKING
+    'Goal': 'Goal', // Para GOALKEEPING
+    'Flag': 'Flag' // Para SET PIECES
   },
   DEFAULTS: {
     ICON: 'BarChart3',
