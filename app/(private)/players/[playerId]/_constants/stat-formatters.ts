@@ -1,15 +1,15 @@
 export const STAT_FORMATTER_CONSTANTS = {
   CATEGORY_TRANSLATIONS: {
-    'Goals': 'Goles',
-    'Passing': 'Pases', 
-    'Defense': 'Defensa',
-    'Physical': 'Físico',
-    'Shooting': 'Remates',
-    'Aerial': 'Aéreo',
-    'Crossing': 'Centros',
-    'Dribbling': 'Regates',
-    'Possession': 'Posesión',
-    'Duels': 'Duelos'
+    'Goals': 'Goals',
+    'Passing': 'Passing', 
+    'Defense': 'Defense',
+    'Physical': 'Physical',
+    'Shooting': 'Shooting',
+    'Aerial': 'Aerial',
+    'Crossing': 'Crossing',
+    'Dribbling': 'Dribbling',
+    'Possession': 'Possession',
+    'Duels': 'Duels'
   },
   CATEGORY_ICONS: {
     'Goals': 'Target',
