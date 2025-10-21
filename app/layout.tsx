@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   title: "AS1 Futures - Sports Scouting Platform",
   description: "Elite-level sports scouting and player management platform",
   generator: "AS1 Futures",
+  icons: {
+    icon: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({
