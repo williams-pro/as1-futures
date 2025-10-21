@@ -12,6 +12,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { PlayerInfoCard } from "./_components/player-info"
 import { PlayerHighlights } from "./_components/player-highlights"
+import { PlayerStatsCard } from "./_components/player-stats-card"
 import { ConfirmDialog } from "./_components/confirm-dialog"
 import { usePlayerDetail } from "./_hooks/use-player-detail"
 import { usePlayerTracking } from "@/hooks/use-player-tracking"
@@ -30,7 +31,6 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
   const {
     player,
     team,
-    user,
     loading,
     error,
     playerIsFavorite,
@@ -355,6 +355,9 @@ export default function PlayerDetailPage({ params }: PlayerDetailPageProps) {
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               <PlayerInfoCard player={player} team={team || undefined} />
               <PlayerHighlights videos={player?.playerVideos} onVideoPlayed={markVideoPlayed} />
+              <div className="xl:col-span-2">
+                <PlayerStatsCard playerId={playerId} />
+              </div>
             </div>
           </div>
         </div>
