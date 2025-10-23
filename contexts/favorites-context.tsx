@@ -2,12 +2,12 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { useSupabaseAuth } from '@/hooks/use-supabase-auth'
+import { useAppContext } from './app-context'
 import { toggleFavorite as toggleFavoriteAction } from '@/app/actions/favorites/toggle-favorite'
 import { toggleExclusive as toggleExclusiveAction } from '@/app/actions/favorites/toggle-exclusive'
 import { removeFromFavorites as removeFromFavoritesAction } from '@/app/actions/favorites/remove-from-favorites'
 import { getMyFavorites } from '@/app/actions/favorites/get-my-favorites'
 import { getMyExclusives } from '@/app/actions/favorites/get-my-exclusives'
-import { getTournaments } from '@/app/actions/tournaments/get-tournaments'
 import { reorderFavorites as reorderFavoritesAction } from '@/app/actions/favorites/reorder-favorites'
 import { useToast } from '@/hooks/use-toast'
 
@@ -47,7 +47,6 @@ export interface FavoritesContextType {
   // Data
   favorites: Favorite[]
   exclusives: Favorite[]
-  currentTournamentId: string | null
   
   // State
   isLoading: boolean
@@ -86,43 +85,31 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { user, isLoading: authLoading } = useSupabaseAuth()
+  const { tournamentId: currentTournamentId, isLoading: appLoading } = useAppContext()
   const { toast } = useToast()
   
   // State
   const [favorites, setFavorites] = useState<Favorite[]>([])
   const [exclusives, setExclusives] = useState<Favorite[]>([])
-  const [currentTournamentId, setCurrentTournamentId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   
   const loadData = useCallback(async () => {
-    if (!user) {
+    if (!user || !currentTournamentId) {
       setFavorites([])
-      setCurrentTournamentId(null)
+      setExclusives([])
       return
     }
 
     try {
       setIsLoading(true)
       setError(null)
-      
-      // Load tournaments first
-      const tournamentsResult = await getTournaments()
-      
-      if (!tournamentsResult.success || !tournamentsResult.tournaments?.length) {
-        setError('No active tournaments found')
-        setFavorites([])
-        return
-      }
 
-      const activeTournament = tournamentsResult.tournaments[0]
-      setCurrentTournamentId(activeTournament.id)
-
-      // Load both favorites and exclusives for the active tournament
+      // Load both favorites and exclusives for the current tournament
       const [favoritesResult, exclusivesResult] = await Promise.all([
-        getMyFavorites(activeTournament.id),
-        getMyExclusives(activeTournament.id)
+        getMyFavorites(currentTournamentId),
+        getMyExclusives(currentTournamentId)
       ])
       
       if (favoritesResult.success && favoritesResult.players) {
@@ -205,25 +192,21 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [user])
+  }, [user, currentTournamentId])
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && !appLoading && user && currentTournamentId) {
       loadData()
     }
-  }, [authLoading, user, loadData])
+  }, [authLoading, appLoading, user, currentTournamentId, loadData])
 
   // Reset when user logs out
   useEffect(() => {
     if (!user && !authLoading) {
       setFavorites([])
-      setCurrentTournamentId(null)
+      setExclusives([])
     }
   }, [user, authLoading])
-
-
-  const exclusiveFavorites = favorites.filter((f) => f.isExclusive)
-
 
   const isFavorite = useCallback((playerId: string) => {
     return favorites.some((f) => f.playerId === playerId)
@@ -411,7 +394,6 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const value: FavoritesContextType = {
     favorites,
     exclusives,
-    currentTournamentId,
     isLoading,
     error,
     isFavorite,

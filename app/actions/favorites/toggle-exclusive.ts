@@ -63,8 +63,7 @@ export async function toggleExclusive(formData: FormData) {
           is_favorite: true,
           is_exclusive: true,
           display_order: nextExclusiveOrder,
-          favorite_display_order: nextFavoriteOrder
-        }, {
+          favorite_display_order: nextFavoriteOrder}, {
           onConflict: 'scout_id,player_id,tournament_id'
         })
 
@@ -72,7 +71,8 @@ export async function toggleExclusive(formData: FormData) {
     } else {
       const { error } = await supabase
         .from('favorites')
-        .update({ is_exclusive: false })
+        .update({ 
+          is_exclusive: false})
         .match({
           scout_id: user.id,
           player_id: playerId,

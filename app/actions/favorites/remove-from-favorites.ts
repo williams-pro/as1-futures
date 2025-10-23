@@ -33,10 +33,13 @@ export async function removeFromFavorites(formData: FormData) {
   }
 
   try {
-    // Remove the favorite completely from the database
+    // Update the favorite to mark as not favorite but preserve the record
+    // Don't modify favorite_display_order as it's only relevant when is_favorite=true
     const { error } = await supabase
       .from('favorites')
-      .delete()
+      .update({ 
+        is_favorite: false
+      })
       .match({
         scout_id: user.id,
         player_id: playerId,
