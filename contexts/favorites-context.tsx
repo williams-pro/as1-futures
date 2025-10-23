@@ -95,8 +95,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
 
   
-  const loadData = useCallback(async () => {
-    if (!user || !currentTournamentId) {
+  const loadData = useCallback(async (tournamentId: string) => {
+    if (!user || !tournamentId) {
       setFavorites([])
       setExclusives([])
       return
@@ -108,8 +108,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
       // Load both favorites and exclusives for the current tournament
       const [favoritesResult, exclusivesResult] = await Promise.all([
-        getMyFavorites(currentTournamentId),
-        getMyExclusives(currentTournamentId)
+        getMyFavorites(tournamentId),
+        getMyExclusives(tournamentId)
       ])
       
       if (favoritesResult.success && favoritesResult.players) {
@@ -186,17 +186,17 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch (err) {
-      console.error('Error loading favorites:', err)
       setError('Failed to load favorites')
       setFavorites([])
     } finally {
       setIsLoading(false)
     }
-  }, [user, currentTournamentId])
+  }, [user])
 
   useEffect(() => {
+    // Solo cargar si todos los requisitos están listos
     if (!authLoading && !appLoading && user && currentTournamentId) {
-      loadData()
+      loadData(currentTournamentId)
     }
   }, [authLoading, appLoading, user, currentTournamentId, loadData])
 
@@ -235,7 +235,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       const result = await toggleFavoriteAction(formData)
       
       if (result.success) {
-        await loadData()
+        await loadData(currentTournamentId)
         
         toast({
           title: "Success",
@@ -280,7 +280,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       const result = await toggleExclusiveAction(formData)
       
       if (result.success) {
-        await loadData()
+        await loadData(currentTournamentId)
         
         toast({
           title: "Success",
@@ -313,7 +313,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       const result = await removeFromFavoritesAction(formData)
       
       if (result.success) {
-        await loadData()
+        await loadData(currentTournamentId)
         
         toast({
           title: "Success",
@@ -387,14 +387,18 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   }, [currentTournamentId, toast])
 
   const refreshFavorites = useCallback(async () => {
-    await loadData()
-  }, [loadData])
+    if (currentTournamentId) {
+      await loadData(currentTournamentId)
+    }
+  }, [loadData, currentTournamentId])
 
 
+  const combinedIsLoading = authLoading || appLoading || isLoading
+  
   const value: FavoritesContextType = {
     favorites,
     exclusives,
-    isLoading,
+    isLoading: combinedIsLoading, // Combinar estados
     error,
     isFavorite,
     isExclusive,

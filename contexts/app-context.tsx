@@ -40,6 +40,7 @@ export function AppProvider({ children }: AppProviderProps) {
   // Cargar información del torneo activo
   useEffect(() => {
     const loadTournamentData = async () => {
+      
       if (!user) {
         setTournamentId(null)
         setTournamentName(null)
@@ -67,6 +68,9 @@ export function AppProvider({ children }: AppProviderProps) {
             setTournamentName(tournamentResult.tournament.name)
           } else {
             setError('No active tournament found')
+            setIsLoading(false)
+            // Lanzar error para que Next.js lo maneje con error.tsx
+            throw new Error('TOURNAMENT_NOT_FOUND: No active tournament available')
           }
         }
 
@@ -84,6 +88,11 @@ export function AppProvider({ children }: AppProviderProps) {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
         setError(errorMessage)
+        setIsLoading(false)
+        // Re-lanzar errores críticos para error.tsx
+        if (errorMessage.includes('TOURNAMENT_NOT_FOUND')) {
+          throw err
+        }
       } finally {
         setIsLoading(false)
       }
