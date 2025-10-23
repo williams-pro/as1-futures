@@ -40,22 +40,27 @@ export async function toggleFavorite(formData: FormData) {
       // Get the next available favorite display order
       const nextFavoriteOrder = await getNextDisplayOrder(user.id, tournamentId, 'favorite')
       
+      // Use upsert to handle both new records and existing records that were marked as not favorite
       const { error } = await supabase
         .from('favorites')
-        .insert({
+        .upsert({
           scout_id: user.id,
           player_id: playerId,
           tournament_id: tournamentId,
           is_favorite: true,
           is_exclusive: false,
-          favorite_display_order: nextFavoriteOrder
+          favorite_display_order: nextFavoriteOrder}, {
+          onConflict: 'scout_id,player_id,tournament_id'
         })
 
       if (error) throw error
     } else {
+      // Update to mark as not favorite but preserve the record
+      // Don't modify favorite_display_order as it's only relevant when is_favorite=true
       const { error } = await supabase
         .from('favorites')
-        .delete()
+        .update({ 
+          is_favorite: false})
         .match({
           scout_id: user.id,
           player_id: playerId,

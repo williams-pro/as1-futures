@@ -3,18 +3,18 @@
 import { useMemo, useState, useCallback } from "react"
 import { Player } from "@/lib/types"
 import { useFavorites } from "@/contexts/favorites-context"
+import { useAppContext } from "@/contexts/app-context"
 import { useToast } from "@/hooks/use-toast"
 import { reorderFavorites as reorderFavoritesAction } from "@/app/actions/favorites/reorder-favorites"
 
 export function useFavoritesPage() {
   const { toast } = useToast()
+  const { tournamentId: currentTournamentId } = useAppContext()
   const {
     favorites,
     exclusives,
-    currentTournamentId,
     isLoading: contextLoading,
     error: contextError,
-    isFavorite,
     isExclusive,
     toggleFavorite,
     toggleExclusive,
@@ -207,7 +207,8 @@ export function useFavoritesPage() {
       toggleExclusive(playerId)
     } else {
       // If only favorite, remove completely
-      removeFromFavorites(playerId)
+      //removeFromFavorites(playerId) FIX-EN LUGAR DE REMOVER VAMOS A USAR EL TOOGLE FAVORITE
+      toggleFavorite(playerId)
     }
   }, [isExclusive, toggleExclusive, removeFromFavorites])
 
